@@ -1,20 +1,33 @@
 const express = require('express');
+const { port,mongoUrl } = require('./config/config');
+const mongoose = require('mongoose');
+const requestLogger = require('./middleware/requestLogger');
+const { successColor, errorColor } = require('./utils/colors');
+
 const app = express();
 const registrationRoute=require("./routes/registration");
-<<<<<<< Updated upstream
-=======
 const mongoose=require("mongoose");
->>>>>>> Stashed changes
 
 app.use(express.json());
+app.use(requestLogger);
+
+connectDB = async () => {
+    try {
+        await mongoose.connect(mongoUrl); // Database connected.
+        console.log(successColor, '✅ Database Connected successfully...');
+    } catch (error) {
+        console.log(errorColor, '❌ Database Connections Error :', error);
+    }
+};
+
+connectDB();
 
 app.get('/', (req, res) => {
   res.send({ message: 'Travel & Tourism API placeholder' });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
 
 //registration route
