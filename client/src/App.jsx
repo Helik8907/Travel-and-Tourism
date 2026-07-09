@@ -1,12 +1,20 @@
-import React from 'react';
+import React from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Layout from './pages/Layout'
+import Home from './pages/Home'
 
 function App() {
   return (
-    <div className="app-shell">
-      <h1>Travel & Tourism Client</h1>
-      <p>Placeholder frontend structure created.</p>
-    </div>
-  );
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </>
+  )
 }
 
-export default App;
+export default App
