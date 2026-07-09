@@ -50,13 +50,13 @@ export default function Navbar() {
         <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 lg:h-20 items-center justify-between">
             {/* Logo */}
-            <a
-              href="#home"
+            <NavLink
+              to="/home"
               className="flex items-center gap-2 font-bold text-xl tracking-tight text-white shrink-0"
             >
               <Compass className="w-7 h-7 text-orange-400" strokeWidth={1.75} />
               <span>Wanderly</span>
-            </a>
+            </NavLink>
 
             {/* Desktop nav links */}
             <ul
@@ -141,7 +141,7 @@ export default function Navbar() {
                 Log in
               </NavLink>
               <NavLink
-                href="/signup"
+                to="/signup"
                 className="text-sm font-semibold px-4 py-2 rounded-full border border-orange-400/60 text-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300"
               >
                 Sign up
