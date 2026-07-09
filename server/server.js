@@ -1,6 +1,10 @@
 const express = require('express');
 const app = express();
 const registrationRoute=require("./routes/registration");
+<<<<<<< Updated upstream
+=======
+const mongoose=require("mongoose");
+>>>>>>> Stashed changes
 
 app.use(express.json());
 
