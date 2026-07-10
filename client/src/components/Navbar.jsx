@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Search, Compass } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { Menu, X, Search, Compass, LogOut } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { getCurrentUser, logout, onAuthChange, refreshSession } from "../lib/auth/auth";
+
+const byPrefixAndName = { fas: { user: faUser } };
 
 const NAV_LINKS = [
   { label: "Destinations", href: "/destinations" },
@@ -12,11 +17,14 @@ const NAV_LINKS = [
 ];
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hovered, setHovered] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [user, setUser] = useState(() => getCurrentUser());
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
 
   useEffect(() => {
@@ -24,6 +32,21 @@ export default function Navbar() {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const syncUser = () => setUser(getCurrentUser());
+    const unsubscribe = onAuthChange(syncUser);
+    if (getCurrentUser()) refreshSession();
+    return unsubscribe;
+  }, []);
+
+  const handleLogout = async () => {
+    setUserMenuOpen(false);
+    setMobileOpen(false);
+    await logout();
+    setUser(null);
+    navigate("/");
+  };
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
@@ -134,18 +157,62 @@ export default function Navbar() {
               </div>
               <div className="w-px h-5 bg-white/20" />
 
-              <NavLink
-                to="/login"
-                className="text-sm font-semibold px-4 py-2 rounded-full border border-orange-400/60 text-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300"
-              >
-                Log in
-              </NavLink>
-              <NavLink
-                to="/signup"
-                className="text-sm font-semibold px-4 py-2 rounded-full border border-orange-400/60 text-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300"
-              >
-                Sign up
-              </NavLink>
+              {user ? (
+                <div
+                  className="relative"
+                  onMouseLeave={() => setUserMenuOpen(false)}
+                >
+                  <motion.button
+                    onClick={() => setUserMenuOpen((open) => !open)}
+                    whileTap={{ scale: 0.94 }}
+                    aria-label="Account menu"
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-orange-400/60 text-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300"
+                  >
+                    <FontAwesomeIcon icon={byPrefixAndName.fas["user"]} className="w-4 h-4" />
+                  </motion.button>
+
+                  <AnimatePresence>
+                    {userMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-full pt-2 w-52"
+                      >
+                        <div className="rounded-2xl border border-white/10 bg-teal-950/95 backdrop-blur-md shadow-xl shadow-black/30 overflow-hidden">
+                          <div className="px-4 py-3 border-b border-white/10">
+                            <p className="text-sm font-semibold text-white truncate">{user.name}</p>
+                            <p className="text-xs text-white/50 truncate">{user.email}</p>
+                          </div>
+                          <button
+                            onClick={handleLogout}
+                            className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+                          >
+                            <LogOut className="w-4 h-4" strokeWidth={1.75} />
+                            Log out
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <>
+                  <NavLink
+                    to="/login"
+                    className="text-sm font-semibold px-4 py-2 rounded-full border border-orange-400/60 text-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300"
+                  >
+                    Log in
+                  </NavLink>
+                  <NavLink
+                    to="/signup"
+                    className="text-sm font-semibold px-4 py-2 rounded-full border border-orange-400/60 text-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300"
+                  >
+                    Sign up
+                  </NavLink>
+                </>
+              )}
 
               {/* Book now */}
               <NavLink
@@ -259,22 +326,41 @@ export default function Navbar() {
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className="mt-6 flex flex-col gap-3"
               >
-                <div className="flex gap-3">
-                  <NavLink
-                    to="/login"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex-1 text-center text-base font-semibold px-5 py-3 rounded-full border border-white/20 text-white hover:bg-white/10 transition-colors"
-                  >
-                    Log in
-                  </NavLink>
-                  <NavLink
-                    to="/signUp"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex-1 text-center text-base font-semibold px-5 py-3 rounded-full border border-orange-400/60 text-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300"
-                  >
-                    Sign up
-                  </NavLink>
-                </div>
+                {user ? (
+                  <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-orange-400/60 text-orange-300 shrink-0">
+                      <FontAwesomeIcon icon={byPrefixAndName.fas["user"]} className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">{user.name}</p>
+                      <p className="text-xs text-white/50 truncate">{user.email}</p>
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      aria-label="Log out"
+                      className="flex items-center justify-center w-10 h-10 rounded-full text-white/70 hover:bg-white/10 hover:text-white transition-colors shrink-0"
+                    >
+                      <LogOut className="w-5 h-5" strokeWidth={1.75} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-3">
+                    <NavLink
+                      to="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex-1 text-center text-base font-semibold px-5 py-3 rounded-full border border-white/20 text-white hover:bg-white/10 transition-colors"
+                    >
+                      Log in
+                    </NavLink>
+                    <NavLink
+                      to="/signUp"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex-1 text-center text-base font-semibold px-5 py-3 rounded-full border border-orange-400/60 text-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300"
+                    >
+                      Sign up
+                    </NavLink>
+                  </div>
+                )}
                 <NavLink
                   to="/bookNow"
                   onClick={() => setMobileOpen(false)}

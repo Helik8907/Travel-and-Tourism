@@ -1,15 +1,20 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, User, Eye, EyeOff, Compass, ArrowLeft } from "lucide-react";
+import { Mail, Lock, User, Globe, Eye, EyeOff, Compass, ArrowLeft } from "lucide-react";
+import { signup } from "../lib/auth/auth";
+import countries from "../lib/countries";
 
 export default function SignUp() {
 
-    const [form, setForm]=useState({name:"", email:"", password:"", confirm:""});
+    const navigate = useNavigate();
+    const [form, setForm]=useState({name:"", email:"", password:"", confirm:"", resident:""});
     const [showPass, setShowPass] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const [error, setError] = useState({ name: "", email: "", password: "", confirm:"" });
+    const [error, setError] = useState({ name: "", email: "", password: "", confirm:"", resident:"" });
+    const [serverError, setServerError] = useState("");
 
     const checkValidate=(e)=>{
         
@@ -57,9 +62,31 @@ export default function SignUp() {
         ))
     }
     // Handle form submit
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if(error.email || error.name || error.password || error.confirm) return;
+        if (error.email || error.name || error.password || error.confirm || error.resident) return;
+        if (!form.resident) {
+            setError((prev) => ({ ...prev, resident: "resident is required" }));
+            return;
+        }
+        setServerError("");
+        setLoading(true);
+        try {
+            await signup({
+                name: form.name,
+                email: form.email,
+                password: form.password,
+                resident: form.resident,
+            });
+            setSuccess(true);
+            setTimeout(() => navigate("/"), 1200);
+        } catch (err) {
+            setServerError(
+                err.response?.data?.message || "Something went wrong. Please try again."
+            );
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -120,11 +147,15 @@ export default function SignUp() {
                                     </svg>
                                 </div>
                                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Welcome aboard!</h3>
-                                <p className="text-gray-500 mb-6">Your account has been created. Check your email to verify.</p>
-                                <a href="#" className="inline-flex items-center gap-2 text-orange-500 font-semibold hover:text-orange-600 transition-colors">
+                                <p className="text-gray-500 mb-6">Your account has been created and you're now signed in.</p>
+                                <button
+                                    type="button"
+                                    onClick={() => navigate("/")}
+                                    className="inline-flex items-center gap-2 text-orange-500 font-semibold hover:text-orange-600 transition-colors"
+                                >
                                     <ArrowLeft className="w-4 h-4" />
-                                    Back to home
-                                </a>
+                                    Go to dashboard
+                                </button>
                             </motion.div>
                         ) : (
                             <motion.div
@@ -163,6 +194,15 @@ export default function SignUp() {
                                 </div>
 
                                 <form onSubmit={handleSubmit} className="space-y-4">
+                                    {serverError && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -4 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5"
+                                        >
+                                            {serverError}
+                                        </motion.div>
+                                    )}
                                     {/* Full Name */}
                                     <motion.div
                                         initial={{ opacity: 0, y: 10 }}
@@ -306,6 +346,43 @@ export default function SignUp() {
                                                 className="text-xs text-red-500 mt-1.5 ml-1"
                                             >
                                                 {error.confirm}
+                                            </motion.p>
+                                        )}
+                                    </motion.div>
+
+                                    {/* Resident */}
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.45 }}
+                                    >
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Country of Residence</label>
+                                        <div className="relative">
+                                            <Globe className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${error.resident ? "text-red-400" : "text-gray-400"}`} strokeWidth={1.75} />
+                                            <select
+                                                required
+                                                value={form.resident}
+                                                onChange={handleChange}
+                                                onBlur={checkValidate}
+                                                name="resident"
+                                                className={`w-full pl-11 pr-4 py-2.5 rounded-xl border text-sm outline-none transition-all appearance-none bg-white ${error.resident
+                                                        ? "border-red-300 bg-red-50 text-red-900 focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                                                        : "border-gray-200 bg-gray-50 text-gray-900 focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                                                    }`}
+                                            >
+                                                <option value="" disabled>Select your country</option>
+                                                {countries.map((country) => (
+                                                    <option key={country} value={country}>{country}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        {error.resident && (
+                                            <motion.p
+                                                initial={{ opacity: 0, y: -4 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="text-xs text-red-500 mt-1.5 ml-1"
+                                            >
+                                                {error.resident}
                                             </motion.p>
                                         )}
                                     </motion.div>
