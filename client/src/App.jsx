@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage'
 import NotFound from './pages/NotFound'
 import BookNow from './pages/BookNow'
 import Experiences from './pages/Experiences'
+import Destinations from './pages/Destinations'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 
 function App() {
@@ -17,7 +18,10 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<LoginPage />} />
           <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
+            <Route element={<ProtectedRoute requireAuth={false} />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/destinations" element={<Destinations />} />
+            </Route>
             <Route element={<ProtectedRoute />}>
               <Route path="/bookNow" element={<BookNow />} />
               <Route path="/experiences" element={<Experiences />} />
