@@ -55,7 +55,7 @@ export default function Hero() {
     const current = slides[index];
 
     return (
-        <div className="min-h-screen relative">
+        <div className="h-screen relative overflow-hidden">
             <section className="relative h-screen min-h-[640px] w-full overflow-hidden bg-teal-950">
                {/* background dark shade and image by using psedo selector */}
                 <AnimatePresence mode="sync">
@@ -152,7 +152,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-1/2 z-20 w-[92%] max-w-4xl"
+                className="absolute left-1/2 -translate-x-1/2 bottom-6 sm:bottom-10 z-20 w-[92%] max-w-4xl"
             >
                 <div className="bg-white rounded-2xl shadow-xl shadow-black/20 p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-4 gap-4">
                     <div className="flex items-center gap-3 sm:border-r sm:border-slate-200 sm:pr-4">

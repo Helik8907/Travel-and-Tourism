@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, Compass, ArrowLeft } from "lucide-react";
+import { login } from "../lib/auth/auth";
 
 // Stagger animation setup
 const containerVariants = {
@@ -21,10 +23,12 @@ const itemVariants = {
 };
 
 export default function LoginPage() {
+    const navigate = useNavigate();
     const [form, setForm]=useState({email:"", password:""});
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState({ email: "", password: "" });
+    const [serverError, setServerError] = useState("");
     const [showPass, setShowPass] = useState(false);
     const [remember, setRemember] = useState(false);
 
@@ -68,14 +72,22 @@ export default function LoginPage() {
             }
         }
     }
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if( error.email || error.password) return;
+        if (error.email || error.password) return;
+        setServerError("");
         setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
+        try {
+            await login(form.email, form.password);
             setSuccess(true);
-        }, 1500);
+            setTimeout(() => navigate("/"), 1200);
+        } catch (err) {
+            setServerError(
+                err.response?.data?.message || "Something went wrong. Please try again."
+            );
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleChange=(e)=>{
@@ -149,10 +161,14 @@ export default function LoginPage() {
                                 </motion.div>
                                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Good to see you!</h3>
                                 <p className="text-gray-500 mb-6">You are now signed in. Ready to explore?</p>
-                                <a href="#" className="inline-flex items-center gap-2 text-orange-500 font-semibold hover:text-orange-600 transition-colors">
+                                <button
+                                    type="button"
+                                    onClick={() => navigate("/")}
+                                    className="inline-flex items-center gap-2 text-orange-500 font-semibold hover:text-orange-600 transition-colors"
+                                >
                                     <ArrowLeft className="w-4 h-4" />
                                     Go to dashboard
-                                </a>
+                                </button>
                             </motion.div>
                         ) : (
                             <motion.div
@@ -197,7 +213,15 @@ export default function LoginPage() {
                                     animate="visible"
                                     className="space-y-5"
                                 >
-                                  
+                                    {serverError && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -4 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5"
+                                        >
+                                            {serverError}
+                                        </motion.div>
+                                    )}
                                     <motion.div variants={itemVariants}>
                                         <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
                                         <div className="relative">
