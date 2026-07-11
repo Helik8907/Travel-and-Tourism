@@ -117,6 +117,12 @@ const destinationSchema = new mongoose.Schema(
     time_take: {
       type: String,
     },
+
+    created_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
   { timestamps: true }
 );
