@@ -11,6 +11,8 @@ const logoutRoutes = require('./routes/logout');
 const meRoutes = require('./routes/me');
 
 const app = express();
+const registrationRoute=require("./routes/registration");
+const mongoose=require("mongoose");
 
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
@@ -41,3 +43,5 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
+//registration route
+app.use("/",registrationRoute);
