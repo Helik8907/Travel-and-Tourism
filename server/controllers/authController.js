@@ -7,7 +7,7 @@ const cookieOptions = {
   httpOnly: true,
   secure: env === 'production',
   sameSite: env === 'production' ? 'none' : 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  maxAge: 24 * 60 * 60 * 1000, // 1 day
 };
 
 const toSafeUser = (user) => ({
@@ -18,7 +18,7 @@ const toSafeUser = (user) => ({
 });
 
 const sendAuthResponse = (res, status, user) => {
-  const token = jwt.sign({ id: user._id }, jwtSecret, { expiresIn: '7d' });
+  const token = jwt.sign({ id: user._id }, jwtSecret, { expiresIn: '1d' });
   res.cookie('token', token, cookieOptions);
   res.status(status).json({ user: toSafeUser(user) });
 };
