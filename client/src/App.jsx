@@ -9,6 +9,7 @@ import BookNow from './pages/BookNow'
 import Experiences from './pages/Experiences'
 import Destinations from './pages/Destinations'
 import ProtectedRoute from './components/auth/ProtectedRoute'
+import DestinationDetail from './pages/DestinationDetail'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route element={<ProtectedRoute requireAuth={false} />}>
               <Route path="/" element={<Home />} />
               <Route path="/destinations" element={<Destinations />} />
+              <Route path='/destinationDetail/:id' element={<DestinationDetail/>}/>
             </Route>
             <Route element={<ProtectedRoute />}>
               <Route path="/bookNow" element={<BookNow />} />
