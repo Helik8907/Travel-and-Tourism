@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Star, MapPin, ArrowRight, Loader } from "lucide-react";
-import { destinationLoader } from "../lib/destinations/destinations";
+import { NavLink } from "react-router-dom";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -133,18 +133,27 @@ function DestinationCard({ dest }) {
   );
 }
 
-function DestinationsPage() {
+const DestinationSection=()=> {
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+ 
   useEffect(() => {
     const fetchDestinations = async () => {
       try {
-        const data = await destinationLoader();
-        setDestinations(data.destinations);
+        const res = await fetch("http://localhost:4000/api/destinations", {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }); 
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.message || "Failed to fetch");
+
+        setDestinations(data.destinations); 
       } catch (err) {
-        setError(err.response?.data?.message || err.message);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -155,7 +164,7 @@ function DestinationsPage() {
 
   if (loading) {
     return (
-      <section className="min-h-screen pt-32 lg:pt-40 bg-teal-950 flex items-center justify-center">
+      <section className="py-24 bg-teal-950 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <Loader className="w-8 h-8 text-orange-400 animate-spin" />
           <p className="text-white/60 text-sm">Loading destinations...</p>
@@ -166,7 +175,7 @@ function DestinationsPage() {
 
   if (error) {
     return (
-      <section className="min-h-screen pt-32 lg:pt-40 bg-teal-950 flex items-center justify-center">
+      <section className="py-24 bg-teal-950 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 font-medium mb-2">Oops! Something went wrong.</p>
           <p className="text-white/50 text-sm">{error}</p>
@@ -176,7 +185,7 @@ function DestinationsPage() {
   }
 
   return (
-    <section id="destinations" className="min-h-screen pt-32 pb-16 lg:pt-40 lg:pb-24 bg-teal-950 font-['Bricolage_Grotesque']">
+    <section id="destinations" className="py-16 lg:py-24 bg-teal-950 font-['Bricolage_Grotesque']">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -207,9 +216,25 @@ function DestinationsPage() {
             <DestinationCard key={dest._id} dest={dest} />
           ))}
         </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="text-center mt-12"
+        >
+          <NavLink
+            to="/all-destinations"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-full border border-white/20 text-white font-medium text-sm hover:bg-white/10 transition-all duration-300"
+          >
+            Explore all destinations
+            <ArrowRight className="w-4 h-4" strokeWidth={1.75} />
+          </NavLink>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-export default DestinationsPage;
+export default DestinationSection;

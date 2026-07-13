@@ -2,16 +2,26 @@ const asyncHandler = require('../middleware/asyncHandler');
 const Destination = require('../models/destination_model');
 
 const destinationLoader = asyncHandler(async (req, res) => {
-  const destinations = await Destination.find();
-  res.status(200).json({ destinations });
+  try {
+    const destinations = await Destination.find();
+    res.status(200).json({ destinations });
+  } catch (error) {
+    console.log(error);
+    
+  }
 });
 
 const getDestination = asyncHandler(async (req, res) => {
-  const destination = await Destination.findById(req.params.id);
-  if (!destination) {
-    return res.status(404).json({ message: 'Destination not found' });
+  try {
+    const destination = await Destination.findById(req.params.id);
+    if (!destination) {
+      return res.status(404).json({ message: 'Destination not found' });
     }
-  res.status(200).json({ destination });
+    res.status(200).json({ destination });
+  } catch (error) {
+    console.log(error);
+    
+  }
 });
 
 const createDestination = asyncHandler(async (req, res) => {

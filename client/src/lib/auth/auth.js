@@ -1,4 +1,9 @@
-import api from "../api";
+import axios from "axios";
+
+const api = axios.create({
+    baseURL: "/api",
+    withCredentials: true,
+});
 
 const AUTH_EVENT = "auth-changed";
 
@@ -58,3 +63,5 @@ export const onAuthChange = (callback) => {
         window.removeEventListener("storage", callback);
     };
 };
+
+export default api;
