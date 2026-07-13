@@ -12,24 +12,11 @@ const destinationLoader = asyncHandler(async (req, res) => {
 });
 
 const getDestination = asyncHandler(async (req, res) => {
-<<<<<<< HEAD
   const destination = await Destination.findById(req.params.id);
   if (!destination) {
     return res.status(404).json({ message: 'Destination not found' });
     }
   res.status(200).json({ destination });
-=======
-  try {
-    const destination = await Destination.findById(req.params.id);
-    if (!destination) {
-      return res.status(404).json({ message: 'Destination not found' });
-    }
-    res.status(200).json({ destination });
-  } catch (error) {
-    console.log(error);
-    
-  }
->>>>>>> 46f75d0b2a9a42a520de25f28c42ac4b2d208053
 });
 
 const createDestination = asyncHandler(async (req, res) => {
