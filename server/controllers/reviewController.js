@@ -1,6 +1,7 @@
 const asyncHandler = require('../middleware/asyncHandler');
 const Review = require('../models/review_model');
 const Destination = require('../models/destination_model');
+const User = require('../models/user_model');
 
 const recalculateDestinationRating = async (destinationId) => {
   const reviews = await Review.find({ destinationId });
@@ -32,6 +33,9 @@ const createReview = asyncHandler(async (req, res) => {
   destination.reviews.push(review._id);
   await destination.save();
   await recalculateDestinationRating(destination._id);
+
+  req.user.reviews_created.push(review._id);
+  await req.user.save();
 
   res.status(201).json({ review });
 });
@@ -65,6 +69,7 @@ const deleteReview = asyncHandler(async (req, res) => {
 
   await review.deleteOne();
   await Destination.findByIdAndUpdate(review.destinationId, { $pull: { reviews: review._id } });
+  await User.findByIdAndUpdate(review.userId, { $pull: { reviews_created: review._id } });
   await recalculateDestinationRating(review.destinationId);
 
   res.status(200).json({ message: 'Review deleted' });

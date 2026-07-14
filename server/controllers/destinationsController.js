@@ -20,9 +20,21 @@ const getDestination = asyncHandler(async (req, res) => {
 });
 
 const createDestination = asyncHandler(async (req, res) => {
+  const { cordinates } = req.body;
+
+  if (cordinates?.lat != null && cordinates?.lng != null) {
+    const existing = await Destination.findOne({
+      'cordinates.lat': cordinates.lat,
+      'cordinates.lng': cordinates.lng,
+    });
+    if (existing) {
+      return res.status(409).json({ message: 'A destination with these coordinates already exists' });
+    }
+  }
+
   const destination = await Destination.create({ ...req.body, created_by: req.user._id });
 
-  req.user.destinations_id.push(destination._id);
+  req.user.destinations_created.push(destination._id);
   await req.user.save();
 
   res.status(201).json({ destination });

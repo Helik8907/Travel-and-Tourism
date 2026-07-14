@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Search, Compass, LogOut } from "lucide-react";
+import { Menu, X, Search, Compass, LogOut, UserCircle } from "lucide-react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
@@ -186,6 +186,14 @@ export default function Navbar() {
                             <p className="text-sm font-semibold text-white truncate">{user.name}</p>
                             <p className="text-xs text-white/50 truncate">{user.email}</p>
                           </div>
+                          <NavLink
+                            to="/profile"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+                          >
+                            <UserCircle className="w-4 h-4" strokeWidth={1.75} />
+                            My Profile
+                          </NavLink>
                           <button
                             onClick={handleLogout}
                             className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors"
@@ -330,21 +338,30 @@ export default function Navbar() {
                 className="mt-6 flex flex-col gap-3"
               >
                 {user ? (
-                  <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-orange-400/60 text-orange-300 shrink-0">
-                      <FontAwesomeIcon icon={byPrefixAndName.fas["user"]} className="w-4 h-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-white truncate">{user.name}</p>
-                      <p className="text-xs text-white/50 truncate">{user.email}</p>
-                    </div>
-                    <button
-                      onClick={handleLogout}
-                      aria-label="Log out"
-                      className="flex items-center justify-center w-10 h-10 rounded-full text-white/70 hover:bg-white/10 hover:text-white transition-colors shrink-0"
+                  <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+                    <NavLink
+                      to="/profile"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3"
                     >
-                      <LogOut className="w-5 h-5" strokeWidth={1.75} />
-                    </button>
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 border border-orange-400/60 text-orange-300 shrink-0">
+                        <FontAwesomeIcon icon={byPrefixAndName.fas["user"]} className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">{user.name}</p>
+                        <p className="text-xs text-white/50 truncate">{user.email}</p>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleLogout();
+                        }}
+                        aria-label="Log out"
+                        className="flex items-center justify-center w-10 h-10 rounded-full text-white/70 hover:bg-white/10 hover:text-white transition-colors shrink-0"
+                      >
+                        <LogOut className="w-5 h-5" strokeWidth={1.75} />
+                      </button>
+                    </NavLink>
                   </div>
                 ) : (
                   <div className="flex gap-3">
