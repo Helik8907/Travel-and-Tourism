@@ -10,11 +10,17 @@ import Experiences from './pages/Experiences'
 import Destinations from './pages/DestinationsPage'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import DestinationDetail from './pages/DestinationDetail'
+import ProfilePage from './pages/ProfilePage'
+import ProfileListPage from './pages/ProfileListPage'
+import AddDestinationPage from './pages/AddDestinationPage'
+import EditDestinationPage from './pages/EditDestinationPage'
+import ScrollToTop from './components/ScrollToTop'
 
 function App() {
   return (
     <>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<LoginPage />} />
@@ -27,6 +33,10 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/bookNow" element={<BookNow />} />
               <Route path="/experiences" element={<Experiences />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profile/:section" element={<ProfileListPage />} />
+              <Route path="/destinations/new" element={<AddDestinationPage />} />
+              <Route path="/destinations/:id/edit" element={<EditDestinationPage />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />

@@ -7,7 +7,7 @@ const {
   deleteDestination,
   toggleLike,
 } = require('../controllers/destinationsController');
-const { protect } = require('../middleware/auth');
+const { protect, restrictTo } = require('../middleware/auth');
 
 const router = express.Router();
 

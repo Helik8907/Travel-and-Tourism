@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const asyncHandler = require('../middleware/asyncHandler');
 const User = require('../models/user_model');
+const Destination = require('../models/destination_model');
+const Review = require('../models/review_model');
 const { jwtSecret, env } = require('../config/config');
 
 const cookieOptions = {
@@ -70,4 +72,47 @@ const me = asyncHandler(async (req, res) => {
   res.status(200).json({ user: toSafeUser(req.user) });
 });
 
-module.exports = { signup, login, logout, me };
+const updateMe = asyncHandler(async (req, res) => {
+  const { name, resident } = req.body;
+
+  if (!name || !resident) {
+    return res.status(400).json({ message: 'Name and resident are required' });
+  }
+
+  req.user.name = name;
+  req.user.resident = resident;
+  await req.user.save();
+
+  res.status(200).json({ user: toSafeUser(req.user) });
+});
+
+const profile = asyncHandler(async (req, res) => {
+  const user = await req.user.populate({
+    path: 'destinations_liked',
+    select: 'name city country images avg_rating',
+  });
+
+  // created_by/userId are the source of truth for authorship; destinations_created
+  // and reviews_created can miss entries created before those fields were wired up.
+  const [destinationsCreated, reviewsCreated] = await Promise.all([
+    Destination.find({ created_by: user._id })
+      .select('name city country images avg_rating')
+      .sort({ createdAt: -1 }),
+    Review.find({ userId: user._id })
+      .select('rating comment createdAt destinationId')
+      .populate('destinationId', 'name city country images')
+      .sort({ createdAt: -1 }),
+  ]);
+
+  res.status(200).json({
+    user: {
+      ...toSafeUser(user),
+      resident: user.resident,
+      createdAt: user.createdAt,
+      destinations_created: destinationsCreated,
+      reviews_created: reviewsCreated,
+    },
+  });
+});
+
+module.exports = { signup, login, logout, me, updateMe, profile };

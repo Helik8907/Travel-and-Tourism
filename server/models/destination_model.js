@@ -72,6 +72,15 @@ const destinationSchema = new mongoose.Schema(
       ],
     }],
 
+    cordinates: {
+      lat: {
+        type: Number,
+      },
+      lng: {
+        type: Number,
+      },
+    },
+
     description: {
       type: String,
     },

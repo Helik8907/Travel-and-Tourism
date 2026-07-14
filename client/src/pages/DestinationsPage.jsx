@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Star, MapPin, ArrowRight, Loader } from "lucide-react";
+import { Star, MapPin, ArrowRight, Loader, ChevronLeft, ChevronRight } from "lucide-react";
 import { destinationLoader } from "../lib/destinations/destinations";
+
+const PAGE_SIZE = 30;
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -136,10 +138,54 @@ function DestinationCard({ dest }) {
   );
 }
 
+function Pagination({ page, totalPages, onPageChange }) {
+  if (totalPages <= 1) return null;
+
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  return (
+    <div className="mt-12 flex items-center justify-center gap-2">
+      <button
+        onClick={() => onPageChange(page - 1)}
+        disabled={page === 1}
+        aria-label="Previous page"
+        className="w-10 h-10 flex items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed"
+      >
+        <ChevronLeft className="w-4 h-4" strokeWidth={1.75} />
+      </button>
+
+      {pageNumbers.map((n) => (
+        <button
+          key={n}
+          onClick={() => onPageChange(n)}
+          aria-current={n === page ? "page" : undefined}
+          className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-semibold transition-colors ${
+            n === page
+              ? "bg-orange-500 text-white"
+              : "text-white/70 hover:bg-white/10 hover:text-white"
+          }`}
+        >
+          {n}
+        </button>
+      ))}
+
+      <button
+        onClick={() => onPageChange(page + 1)}
+        disabled={page === totalPages}
+        aria-label="Next page"
+        className="w-10 h-10 flex items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed"
+      >
+        <ChevronRight className="w-4 h-4" strokeWidth={1.75} />
+      </button>
+    </div>
+  );
+}
+
 function DestinationsPage() {
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchDestinations = async () => {
@@ -156,9 +202,24 @@ function DestinationsPage() {
     fetchDestinations();
   }, []);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [page]);
+
+  const totalPages = Math.max(1, Math.ceil(destinations.length / PAGE_SIZE));
+  const pagedDestinations = destinations.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE
+  );
+
+  const handlePageChange = (n) => {
+    if (n < 1 || n > totalPages) return;
+    setPage(n);
+  };
+
   if (loading) {
     return (
-      <section className="min-h-screen pt-32 lg:pt-40 bg-teal-950 flex items-center justify-center">
+      <section className="min-h-screen pt-20 lg:pt-24 bg-teal-950 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <Loader className="w-8 h-8 text-orange-400 animate-spin" />
           <p className="text-white/60 text-sm">Loading destinations...</p>
@@ -169,7 +230,7 @@ function DestinationsPage() {
 
   if (error) {
     return (
-      <section className="min-h-screen pt-32 lg:pt-40 bg-teal-950 flex items-center justify-center">
+      <section className="min-h-screen pt-20 lg:pt-24 bg-teal-950 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 font-medium mb-2">Oops! Something went wrong.</p>
           <p className="text-white/50 text-sm">{error}</p>
@@ -179,7 +240,7 @@ function DestinationsPage() {
   }
 
   return (
-    <section id="destinations" className="min-h-screen pt-32 pb-16 lg:pt-40 lg:pb-24 bg-teal-950 font-['Bricolage_Grotesque']">
+    <section id="destinations" className="min-h-screen pt-20 pb-16 lg:pt-24 lg:pb-24 bg-teal-950 font-['Bricolage_Grotesque']">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -200,16 +261,18 @@ function DestinationsPage() {
         </motion.div>
 
         <motion.div
+          key={page}
           variants={containerVariants}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
+          animate="visible"
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {destinations.map((dest) => (
+          {pagedDestinations.map((dest) => (
             <DestinationCard key={dest._id} dest={dest} />
           ))}
         </motion.div>
+
+        <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
       </div>
     </section>
   );
