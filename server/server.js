@@ -3,7 +3,17 @@ const { port,mongoUrl } = require('./config/config');
 const mongoose = require('mongoose');
 const requestLogger = require('./middleware/requestLogger');
 const { successColor, errorColor } = require('./utils/colors');
+<<<<<<< Updated upstream
 
+=======
+const loginRoutes = require('./routes/login');
+const signupRoutes = require('./routes/signup');
+const logoutRoutes = require('./routes/logout');
+const meRoutes = require('./routes/me');
+const destinationRoutes = require('./routes/destination');
+const reviewRoutes = require('./routes/review');
+const searchRoute=require("./routes/serch");
+>>>>>>> Stashed changes
 const app = express();
 const registrationRoute=require("./routes/registration");
 const mongoose=require("mongoose");
@@ -11,6 +21,18 @@ const mongoose=require("mongoose");
 app.use(express.json());
 app.use(requestLogger);
 
+<<<<<<< Updated upstream
+=======
+app.use('/api/login', loginRoutes);
+app.use('/api/signup', signupRoutes);
+app.use('/api/logout', logoutRoutes);
+app.use('/api/me', meRoutes);
+app.use('/api/destinations', destinationRoutes);
+app.use('/api/reviews', reviewRoutes);
+//search route
+app.use('/api/get-amenities',searchRoute);
+
+>>>>>>> Stashed changes
 connectDB = async () => {
     try {
         await mongoose.connect(mongoUrl); // Database connected.
