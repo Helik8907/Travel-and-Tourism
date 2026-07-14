@@ -18,7 +18,6 @@ const destinationsData = [
     weather: { min_temp: 10, max_temp: 32, condition: "Clear and Pleasant" },
     entry_req: ["Passport/ID required", "Ticket needed for monument entry"],
     avg_rating: 4.9,
-    reviews: [],
     review_count: 0,
     time_take: "1 Day"
   },
@@ -37,7 +36,6 @@ const destinationsData = [
     weather: { min_temp: 24, max_temp: 33, condition: "Sunny and Humid" },
     entry_req: ["Free entry to beach", "Paid water sports packages"],
     avg_rating: 4.4,
-    reviews: [],
     review_count: 0,
     time_take: "1-2 Days"
   },
@@ -56,7 +54,6 @@ const destinationsData = [
     weather: { min_temp: -5, max_temp: 15, condition: "Cold and Windy" },
     entry_req: ["Inner Line Permit (ILP) required for domestic/foreign tourists"],
     avg_rating: 4.8,
-    reviews: [],
     review_count: 0,
     time_take: "2 Days"
   },
@@ -75,7 +72,6 @@ const destinationsData = [
     weather: { min_temp: 12, max_temp: 30, condition: "Sunny" },
     entry_req: ["Composite entry ticket recommended"],
     avg_rating: 4.7,
-    reviews: [],
     review_count: 0,
     time_take: "1-2 Days"
   },
@@ -94,7 +90,6 @@ const destinationsData = [
     weather: { min_temp: 15, max_temp: 25, condition: "Misty and Cool" },
     entry_req: ["National Park entry fee applies"],
     avg_rating: 4.6,
-    reviews: [],
     review_count: 0,
     time_take: "2 Days"
   },
@@ -113,7 +108,6 @@ const destinationsData = [
     weather: { min_temp: 11, max_temp: 29, condition: "Foggy Mornings, Clear Evenings" },
     entry_req: ["Free public viewing", "Paid boat rides available"],
     avg_rating: 4.9,
-    reviews: [],
     review_count: 0,
     time_take: "1 Day"
   },
@@ -132,7 +126,6 @@ const destinationsData = [
     weather: { min_temp: 14, max_temp: 38, condition: "Dry and Warm" },
     entry_req: ["Advance online safari booking mandatory"],
     avg_rating: 4.5,
-    reviews: [],
     review_count: 0,
     time_take: "2 Days"
   },
@@ -151,7 +144,6 @@ const destinationsData = [
     weather: { min_temp: 15, max_temp: 35, condition: "Clear Skies" },
     entry_req: ["Medical fitness self-declaration for rafting"],
     avg_rating: 4.7,
-    reviews: [],
     review_count: 0,
     time_take: "2-3 Days"
   },
@@ -170,7 +162,6 @@ const destinationsData = [
     weather: { min_temp: 23, max_temp: 32, condition: "Tropical Coastline" },
     entry_req: ["Prior houseboat booking highly recommended"],
     avg_rating: 4.6,
-    reviews: [],
     review_count: 0,
     time_take: "1-2 Days"
   },
@@ -189,7 +180,6 @@ const destinationsData = [
     weather: { min_temp: 18, max_temp: 34, condition: "Hot and Dry" },
     entry_req: ["ASI Monument entry ticket required"],
     avg_rating: 4.8,
-    reviews: [],
     review_count: 0,
     time_take: "2-3 Days"
   },
@@ -207,7 +197,6 @@ const destinationsData = [
     weather: { min_temp: 20, max_temp: 32, condition: "Pleasant Coastal Breeze" },
     entry_req: ["Free public access", "Security screening at Gateway"],
     avg_rating: 4.6,
-    reviews: [],
     review_count: 0,
     time_take: "1 Day"
   },
@@ -226,7 +215,6 @@ const destinationsData = [
     weather: { min_temp: 5, max_temp: 18, condition: "Chilly and Misty" },
     entry_req: ["Toy train tickets must be booked via IRCTC"],
     avg_rating: 4.7,
-    reviews: [],
     review_count: 0,
     time_take: "2 Days"
   },
@@ -245,7 +233,6 @@ const destinationsData = [
     weather: { min_temp: 8, max_temp: 28, condition: "Dry and Cool Nights" },
     entry_req: ["Prior booking for desert camps required"],
     avg_rating: 4.5,
-    reviews: [],
     review_count: 0,
     time_take: "1-2 Days"
   },
@@ -264,7 +251,6 @@ const destinationsData = [
     weather: { min_temp: 7, max_temp: 30, condition: "Clear Skies" },
     entry_req: ["Head covering required", "Feet must be washed before entry"],
     avg_rating: 5.0,
-    reviews: [],
     review_count: 0,
     time_take: "1 Day"
   },
@@ -283,7 +269,6 @@ const destinationsData = [
     weather: { min_temp: 23, max_temp: 31, condition: "Sunny and Tropical" },
     entry_req: ["Ferry booking from Port Blair required", "Scuba requires medical form"],
     avg_rating: 4.9,
-    reviews: [],
     review_count: 0,
     time_take: "3 Days"
   },
@@ -302,7 +287,6 @@ const destinationsData = [
     weather: { min_temp: 11, max_temp: 30, condition: "Pleasant" },
     entry_req: ["Palace entry ticket separate from boat cruise"],
     avg_rating: 4.8,
-    reviews: [],
     review_count: 0,
     time_take: "2 Days"
   },
@@ -321,7 +305,6 @@ const destinationsData = [
     weather: { min_temp: 10, max_temp: 28, condition: "Humid/Subtropical" },
     entry_req: ["Park closed during monsoon months"],
     avg_rating: 4.6,
-    reviews: [],
     review_count: 0,
     time_take: "2 Days"
   },
@@ -340,7 +323,6 @@ const destinationsData = [
     weather: { min_temp: 12, max_temp: 22, condition: "Cool and Crisp" },
     entry_req: ["Nominal eco-tax at city boundary"],
     avg_rating: 4.3,
-    reviews: [],
     review_count: 0,
     time_take: "1-2 Days"
   },
@@ -359,7 +341,6 @@ const destinationsData = [
     weather: { min_temp: 9, max_temp: 32, condition: "Dry and Sunny" },
     entry_req: ["ASI ticket needed for Western Group of temples"],
     avg_rating: 4.6,
-    reviews: [],
     review_count: 0,
     time_take: "1 Day"
   },
@@ -378,7 +359,6 @@ const destinationsData = [
     weather: { min_temp: 22, max_temp: 31, condition: "Warm and Coastal" },
     entry_req: ["Free access", "Vehicles barred from promenade after 6 PM"],
     avg_rating: 4.5,
-    reviews: [],
     review_count: 0,
     time_take: "2 Days"
   },
@@ -396,7 +376,6 @@ const destinationsData = [
     weather: { min_temp: 4, max_temp: 22, condition: "Cool Alpine Climate" },
     entry_req: ["Free access to city landmarks", "Toy train tickets required via IRCTC"],
     avg_rating: 4.4,
-    reviews: [],
     review_count: 0,
     time_take: "2 Days"
   },
@@ -415,7 +394,6 @@ const destinationsData = [
     weather: { min_temp: 16, max_temp: 31, condition: "Pleasant and Sunny" },
     entry_req: ["Palace entry fee applicable", "Footwear must be deposited outside"],
     avg_rating: 4.8,
-    reviews: [],
     review_count: 0,
     time_take: "1-2 Days"
   },
@@ -434,7 +412,6 @@ const destinationsData = [
     weather: { min_temp: 8, max_temp: 24, condition: "Crisp Mountain Air" },
     entry_req: ["Eco-tourism fee at entrance"],
     avg_rating: 4.5,
-    reviews: [],
     review_count: 0,
     time_take: "1 Day"
   },
@@ -453,7 +430,6 @@ const destinationsData = [
     weather: { min_temp: 22, max_temp: 33, condition: "Warm and Coastal" },
     entry_req: ["Single ASI ticket grants entry to all core monuments"],
     avg_rating: 4.7,
-    reviews: [],
     review_count: 0,
     time_take: "1 Day"
   },
@@ -472,7 +448,6 @@ const destinationsData = [
     weather: { min_temp: -8, max_temp: 8, condition: "Heavy Snowfall / Freezing" },
     entry_req: ["Gondola tickets must be booked online well in advance"],
     avg_rating: 4.9,
-    reviews: [],
     review_count: 0,
     time_take: "2 Days"
   },
@@ -491,7 +466,6 @@ const destinationsData = [
     weather: { min_temp: 11, max_temp: 30, condition: "Arid and Clear" },
     entry_req: ["No footwear allowed near the lake ghats", "Alcohol & non-veg banned in town"],
     avg_rating: 4.3,
-    reviews: [],
     review_count: 0,
     time_take: "1-2 Days"
   },
@@ -510,7 +484,6 @@ const destinationsData = [
     weather: { min_temp: 9, max_temp: 35, condition: "Forest Subtropical" },
     entry_req: ["Night stay permits inside the forest zone must be reserved months prior"],
     avg_rating: 4.6,
-    reviews: [],
     review_count: 0,
     time_take: "2 Days"
   },
@@ -529,7 +502,6 @@ const destinationsData = [
     weather: { min_temp: 22, max_temp: 32, condition: "Sunny Coastline" },
     entry_req: ["Free beach access", "Inter-beach ferries require nominal cash fee"],
     avg_rating: 4.5,
-    reviews: [],
     review_count: 0,
     time_take: "2 Days"
   },
@@ -548,7 +520,6 @@ const destinationsData = [
     weather: { min_temp: 14, max_temp: 33, condition: "Sunny and Warm" },
     entry_req: ["Caves remain closed on specific weekdays (Ajanta on Mondays, Ellora on Tuesdays)"],
     avg_rating: 4.9,
-    reviews: [],
     review_count: 0,
     time_take: "2 Days"
   },
@@ -567,7 +538,6 @@ const destinationsData = [
     weather: { min_temp: 10, max_temp: 23, condition: "Highly Misty / Humid" },
     entry_req: ["Requires a steep downhill trek of roughly 3,000 steps"],
     avg_rating: 4.8,
-    reviews: [],
     review_count: 0,
     time_take: "1-2 Days"
   },
@@ -1127,7 +1097,6 @@ const destinationsData = [
   weather: { min_temp: 4, max_temp: 23, condition: "Cool Alpine" },
   entry_req: ["Passport", "Advance castle ticket recommended"],
   avg_rating: 4.8,
-  reviews: [],
   review_count: 0,
   time_take: "1 Day"
 },
@@ -1148,7 +1117,6 @@ const destinationsData = [
   weather: { min_temp: 10, max_temp: 28, condition: "Mediterranean" },
   entry_req: ["Passport", "Timed entry ticket"],
   avg_rating: 4.8,
-  reviews: [],
   review_count: 0,
   time_take: "3-4 Hours"
 },
@@ -1169,7 +1137,6 @@ const destinationsData = [
   weather: { min_temp: 2, max_temp: 22, condition: "Cool and Scenic" },
   entry_req: ["Passport"],
   avg_rating: 4.9,
-  reviews: [],
   review_count: 0,
   time_take: "1-2 Days"
 },
@@ -1190,7 +1157,6 @@ const destinationsData = [
   weather: { min_temp: 7, max_temp: 24, condition: "Mild" },
   entry_req: ["Passport", "Advance booking for Parliament tours"],
   avg_rating: 4.7,
-  reviews: [],
   review_count: 0,
   time_take: "4-6 Hours"
 },
@@ -1211,7 +1177,6 @@ const destinationsData = [
   weather: { min_temp: 5, max_temp: 24, condition: "Pleasant" },
   entry_req: ["Passport"],
   avg_rating: 4.8,
-  reviews: [],
   review_count: 0,
   time_take: "1 Day"
 },
@@ -1232,7 +1197,6 @@ const destinationsData = [
   weather: { min_temp: 13, max_temp: 28, condition: "Sunny Coast" },
   entry_req: ["Passport", "Cinque Terre Card for trails"],
   avg_rating: 4.8,
-  reviews: [],
   review_count: 0,
   time_take: "2 Days"
 },
@@ -1253,7 +1217,6 @@ const destinationsData = [
   weather: { min_temp: -3, max_temp: 15, condition: "Cold with Geothermal Warmth" },
   entry_req: ["Passport", "Advance reservation required"],
   avg_rating: 4.7,
-  reviews: [],
   review_count: 0,
   time_take: "4-6 Hours"
 },
@@ -1274,7 +1237,6 @@ const destinationsData = [
   weather: { min_temp: -10, max_temp: 18, condition: "Alpine" },
   entry_req: ["Passport", "Schengen Visa (if applicable)"],
   avg_rating: 4.9,
-  reviews: [],
   review_count: 0,
   time_take: "2-3 Days"
 },

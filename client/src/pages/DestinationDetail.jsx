@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Star,
@@ -15,6 +16,9 @@ import {
   User,
   ThumbsUp,
 } from "lucide-react";
+import { getDestination, toggleLikeDestination } from "../lib/destinations/destinations";
+import { getCurrentUser } from "../lib/auth/auth";
+import AuthPromptModal from "../components/auth/AuthPromptModal";
 
 const typeColors = {
   Beach: "bg-sky-500/90",
@@ -45,15 +49,27 @@ function StarRating({ rating, count, size = "sm" }) {
 }
 
 // Image gallery with animated transitions
-function ImageGallery({ images }) {
+const SLIDE_INTERVAL = 4000;
+
+function ImageGallery({ images, requireAuth, liked, likeCount, onToggleLike }) {
   const [current, setCurrent] = useState(0);
-  const [liked, setLiked] = useState(false);
+  const [paused, setPaused] = useState(false);
 
   const next = () => setCurrent((c) => (c + 1) % images.length);
   const prev = () => setCurrent((c) => (c - 1 + images.length) % images.length);
 
+  useEffect(() => {
+    if (paused || images.length <= 1) return;
+    const timer = setInterval(next, SLIDE_INTERVAL);
+    return () => clearInterval(timer);
+  }, [current, paused, images.length]);
+
   return (
-    <div className="relative h-[400px] lg:h-[500px] rounded-2xl overflow-hidden">
+    <div
+      className="relative h-[400px] lg:h-[500px] rounded-2xl overflow-hidden"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       <AnimatePresence mode="wait">
         <motion.img
           key={current}
@@ -62,7 +78,7 @@ function ImageGallery({ images }) {
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.7, ease: "easeInOut" }}
           className="absolute inset-0 w-full h-full object-cover"
         />
       </AnimatePresence>
@@ -70,23 +86,24 @@ function ImageGallery({ images }) {
 
       {/* Top controls */}
       <div className="absolute top-4 left-4">
-        <a
-          href="#destinations"
+        <Link
+          to="/destinations"
           className="flex items-center gap-2 text-white/90 hover:text-white text-sm font-medium transition-colors bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full"
         >
           <ArrowLeft className="w-4 h-4" strokeWidth={1.75} />
           Back to destinations
-        </a>
+        </Link>
       </div>
 
-      <div className="absolute top-4 right-4 flex gap-2">
+      <div className="absolute top-4 right-4 flex items-center gap-2">
         <button
-          onClick={() => setLiked(!liked)}
-          className={`w-10 h-10 rounded-full backdrop-blur-sm flex items-center justify-center transition-colors ${
+          onClick={() => requireAuth(onToggleLike)}
+          className={`h-10 px-3 rounded-full backdrop-blur-sm flex items-center gap-1.5 transition-colors ${
             liked ? "bg-red-500/80 text-white" : "bg-black/20 text-white/80 hover:text-white"
           }`}
         >
           <Heart className="w-5 h-5" fill={liked} strokeWidth={1.75} />
+          <span className="text-sm font-semibold">{likeCount}</span>
         </button>
         <button className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-sm text-white/80 hover:text-white flex items-center justify-center transition-colors">
           <Share2 className="w-5 h-5" strokeWidth={1.75} />
@@ -113,8 +130,18 @@ function ImageGallery({ images }) {
           <button
             key={i}
             onClick={() => setCurrent(i)}
-            className={`h-2 rounded-full transition-all ${i === current ? "bg-white w-6" : "bg-white/50 w-2"}`}
-          />
+            className="relative h-2 w-6 rounded-full bg-white/40 overflow-hidden"
+          >
+            {i === current && (
+              <motion.div
+                key={`${current}-${paused}`}
+                className="absolute inset-y-0 left-0 bg-white rounded-full"
+                initial={{ width: "0%" }}
+                animate={{ width: paused ? "0%" : "100%" }}
+                transition={{ duration: paused ? 0 : SLIDE_INTERVAL / 1000, ease: "linear" }}
+              />
+            )}
+          </button>
         ))}
       </div>
     </div>
@@ -161,78 +188,66 @@ function ReviewCard({ review, index }) {
 }
 
 export default function DestinationDetail() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [destination, setDestination] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+
+  const requireAuth = (action) => {
+    if (!getCurrentUser()) {
+      setShowAuthModal(true);
+      return;
+    }
+    action();
+  };
+
+  const handleBookTrip = () => requireAuth(() => navigate("/bookNow"));
+  const handleSaveToWishlist = () => requireAuth(() => setSaved((s) => !s));
+
+  const handleToggleLike = async () => {
+    const prevLiked = liked;
+    const prevCount = likeCount;
+    setLiked(!prevLiked);
+    setLikeCount(prevCount + (prevLiked ? -1 : 1));
+    try {
+      const data = await toggleLikeDestination(id);
+      setLiked(data.liked);
+      setLikeCount(data.like_count);
+    } catch (err) {
+      setLiked(prevLiked);
+      setLikeCount(prevCount);
+    }
+  };
 
   useEffect(() => {
     const fetchDestination = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        // Mock data for design Purpose
-        setDestination({
-          _id: "3",
-          name: "Bali Retreat",
-          city: "Ubud",
-          country: "Indonesia",
-          type: ["Nature", "Adventure"],
-          description:
-            "Discover the spiritual heart of Bali in Ubud, where lush rice terraces cascade down volcanic hillsides, ancient temples whisper centuries of stories, and the gentle rhythm of village life invites you to slow down. From sunrise yoga overlooking the jungle to exploring sacred monkey forests, Ubud offers a perfect blend of tranquility and adventure for the mindful traveler.",
-          images: [
-            "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=1200&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1555400038-63f5ba517a47?w=1200&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1573790387438-4da905039392?w=1200&auto=format&fit=crop",
-          ],
-          cost_range: { min: 800, max: 1600 },
-          best_months: ["Apr", "May", "Jun", "Sep"],
-          weather: {
-            min_temp: 22,
-            max_temp: 31,
-            condition: "Tropical humid with afternoon showers",
-          },
-          entry_req: [
-            "Valid passport (6+ months)",
-            "Visa on arrival (30 days)",
-            "Return ticket required",
-            "Vaccination certificate (if applicable)",
-          ],
-          avg_rating: 4.6,
-          review_count: 891,
-          time_take: "7-10 days recommended",
-          reviews: [
-            {
-              _id: "r1",
-              user: "Sarah M.",
-              rating: 5,
-              text: "Absolutely magical! The rice terraces at sunrise are unforgettable. Our guide was incredibly knowledgeable about Balinese culture.",
-              date: "2024-11-15",
-              likes: 24,
-            },
-            {
-              _id: "r2",
-              user: "James K.",
-              rating: 4,
-              text: "Beautiful place but very crowded in the central market area. Stay in a villa outside town for the best experience.",
-              date: "2024-10-28",
-              likes: 12,
-            },
-            {
-              _id: "r3",
-              user: "Elena R.",
-              rating: 5,
-              text: "The yoga retreat was life-changing. Food is amazing and the people are so warm. Already planning my return!",
-              date: "2024-09-20",
-              likes: 31,
-            },
-          ],
-        });
+        const data = await getDestination(id);
+        setDestination(data.destination);
+        setLikeCount(data.destination.like_count ?? 0);
+        const user = getCurrentUser();
+        setLiked(!!user?.destinations_liked?.includes(id));
       } catch (err) {
-        console.error(err);
+        setError(err.response?.data?.message || err.message);
       } finally {
-        setTimeout(() => setLoading(false), 600);
+        setLoading(false);
       }
     };
 
     fetchDestination();
-  }, []);
+  }, [id]);
+
+  const reviews = destination?.reviews?.filter(
+    (r) => typeof r === "object" && r !== null
+  ) ?? [];
 
   if (loading) {
     return (
@@ -245,19 +260,25 @@ export default function DestinationDetail() {
     );
   }
 
-  if (!destination) {
+  if (error || !destination) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-teal-950">
-        <p className="text-white/60">Destination not found.</p>
+        <p className="text-white/60">{error || "Destination not found."}</p>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-teal-950 pb-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 lg:pt-25">
         {/* Image Gallery */}
-        <ImageGallery images={destination.images} />
+        <ImageGallery
+          images={destination.images?.length ? destination.images : ["/placeholder.jpg"]}
+          requireAuth={requireAuth}
+          liked={liked}
+          likeCount={likeCount}
+          onToggleLike={handleToggleLike}
+        />
 
         {/* Main content grid */}
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -268,7 +289,7 @@ export default function DestinationDetail() {
               transition={{ delay: 0.2 }}
             >
               <div className="flex items-center gap-2 mb-3">
-                {destination.type.map((t) => (
+                {destination.type?.map((t) => (
                   <span
                     key={t}
                     className={`px-3 py-1 rounded-full text-xs font-bold text-white uppercase tracking-wider ${
@@ -325,9 +346,9 @@ export default function DestinationDetail() {
                   <h3 className="text-sm font-bold text-white">Weather</h3>
                 </div>
                 <p className="text-2xl font-bold text-white mb-1">
-                  {destination.weather.min_temp}° - {destination.weather.max_temp}°C
+                  {destination.weather?.min_temp}° - {destination.weather?.max_temp}°C
                 </p>
-                <p className="text-xs text-white/50">{destination.weather.condition}</p>
+                <p className="text-xs text-white/50">{destination.weather?.condition}</p>
               </div>
 
               <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
@@ -358,7 +379,7 @@ export default function DestinationDetail() {
                 <h3 className="text-sm font-bold text-white">Best Time to Visit</h3>
               </div>
               <div className="flex flex-wrap gap-2">
-                {destination.best_months.map((m) => (
+                {destination.best_months?.map((m) => (
                   <span
                     key={m}
                     className="px-4 py-2 rounded-xl bg-orange-500/10 text-orange-300 text-sm font-medium border border-orange-500/20"
@@ -383,7 +404,7 @@ export default function DestinationDetail() {
                 <h3 className="text-sm font-bold text-white">Entry Requirements</h3>
               </div>
               <ul className="space-y-2">
-                {destination.entry_req.map((req, i) => (
+                {destination.entry_req?.map((req, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-white/70">
                     <span className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-1.5 shrink-0" />
                     {req}
@@ -401,11 +422,15 @@ export default function DestinationDetail() {
               <h2 className="text-xl font-bold text-white mb-4">
                 Traveler Reviews
               </h2>
-              <div className="space-y-4">
-                {destination.reviews.map((review, i) => (
-                  <ReviewCard key={review._id} review={review} index={i} />
-                ))}
-              </div>
+              {reviews.length > 0 ? (
+                <div className="space-y-4">
+                  {reviews.map((review, i) => (
+                    <ReviewCard key={review._id} review={review} index={i} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-white/50 text-sm">No reviews yet.</p>
+              )}
             </motion.div>
           </div>
 
@@ -446,13 +471,21 @@ export default function DestinationDetail() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={handleBookTrip}
                 className="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-colors shadow-lg shadow-orange-500/20 mb-3"
               >
                 Book This Trip
               </motion.button>
 
-              <button className="w-full py-3 rounded-xl border border-gray-200 text-gray-700 font-medium text-sm hover:bg-gray-50 transition-colors">
-                Save to Wishlist
+              <button
+                onClick={handleSaveToWishlist}
+                className={`w-full py-3 rounded-xl border font-medium text-sm transition-colors ${
+                  saved
+                    ? "border-orange-200 bg-orange-50 text-orange-600"
+                    : "border-gray-200 text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                {saved ? "Saved to Wishlist" : "Save to Wishlist"}
               </button>
 
               <p className="text-xs text-gray-400 text-center mt-4">
@@ -462,6 +495,14 @@ export default function DestinationDetail() {
           </div>
         </div>
       </div>
+
+      {showAuthModal && (
+        <AuthPromptModal
+          onClose={() => setShowAuthModal(false)}
+          onLogin={() => navigate("/login", { state: { from: location } })}
+          onSignup={() => navigate("/signup", { state: { from: location } })}
+        />
+      )}
     </div>
   );
 }

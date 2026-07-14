@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Star, MapPin, ArrowRight, Loader } from "lucide-react";
 import { destinationLoader } from "../lib/destinations/destinations";
@@ -43,12 +44,14 @@ function StarRating({ rating, count }) {
 
 function DestinationCard({ dest }) {
   const [hovered, setHovered] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <motion.div
       variants={cardVariants}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={() => navigate(`/destinationDetail/${dest._id}`)}
       className="group relative rounded-2xl overflow-hidden cursor-pointer bg-white shadow-lg font-['Bricolage_Grotesque']"
     >
       <div className="relative h-64 overflow-hidden">

@@ -24,3 +24,8 @@ export const deleteDestination = async (id) => {
     const { data } = await api.delete(`/destinations/${id}`);
     return data;
 };
+
+export const toggleLikeDestination = async (id) => {
+    const { data } = await api.post(`/destinations/${id}/like`);
+    return data;
+};

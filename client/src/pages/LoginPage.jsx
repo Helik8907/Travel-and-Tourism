@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, Compass, ArrowLeft } from "lucide-react";
 import { login } from "../lib/auth/auth";
@@ -24,6 +24,8 @@ const itemVariants = {
 
 export default function LoginPage() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from || "/";
     const [form, setForm]=useState({email:"", password:""});
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -80,7 +82,7 @@ export default function LoginPage() {
         try {
             await login(form.email, form.password);
             setSuccess(true);
-            setTimeout(() => navigate("/"), 1200);
+            setTimeout(() => navigate(from, { replace: true }), 1200);
         } catch (err) {
             setServerError(
                 err.response?.data?.message || "Something went wrong. Please try again."
@@ -163,7 +165,7 @@ export default function LoginPage() {
                                 <p className="text-gray-500 mb-6">You are now signed in. Ready to explore?</p>
                                 <button
                                     type="button"
-                                    onClick={() => navigate("/")}
+                                    onClick={() => navigate(from, { replace: true })}
                                     className="inline-flex items-center gap-2 text-orange-500 font-semibold hover:text-orange-600 transition-colors"
                                 >
                                     <ArrowLeft className="w-4 h-4" />
@@ -181,7 +183,7 @@ export default function LoginPage() {
                                     <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Sign in</h1>
                                     <p className="text-gray-500 text-sm">
                                         New here?{" "}
-                                        <a href="#signup" className="text-orange-500 font-semibold hover:text-orange-600 transition-colors">Create an account</a>
+                                        <Link to="/signup" state={{ from }} className="text-orange-500 font-semibold hover:text-orange-600 transition-colors">Create an account</Link>
                                     </p>
                                 </div>
 
