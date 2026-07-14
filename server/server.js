@@ -11,7 +11,7 @@ const logoutRoutes = require('./routes/logout');
 const meRoutes = require('./routes/me');
 const destinationRoutes = require('./routes/destination');
 const reviewRoutes = require('./routes/review');
-
+const searchRoute=require("./routes/serch");
 const app = express();
 
 app.use(cors({ origin: true, credentials: true }));
@@ -25,6 +25,8 @@ app.use('/api/logout', logoutRoutes);
 app.use('/api/me', meRoutes);
 app.use('/api/destinations', destinationRoutes);
 app.use('/api/reviews', reviewRoutes);
+//search route
+app.use('/api/get-amenities',searchRoute);
 
 connectDB = async () => {
     try {
