@@ -5,6 +5,7 @@ const {
   createDestination,
   editDestination,
   deleteDestination,
+  toggleLike,
 } = require('../controllers/destinationsController');
 const { protect } = require('../middleware/auth');
 
@@ -15,5 +16,6 @@ router.get('/:id', getDestination);
 router.post('/', protect, createDestination);
 router.put('/:id', protect, editDestination);
 router.delete('/:id', protect, deleteDestination);
+router.post('/:id/like', protect, toggleLike);
 
 module.exports = router;

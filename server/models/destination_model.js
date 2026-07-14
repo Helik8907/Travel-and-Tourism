@@ -137,6 +137,10 @@ const destinationSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    like_count: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

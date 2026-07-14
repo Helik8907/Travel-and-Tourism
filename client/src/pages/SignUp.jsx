@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, User, Globe, Eye, EyeOff, Compass, ArrowLeft } from "lucide-react";
 import { signup } from "../lib/auth/auth";
@@ -8,6 +8,8 @@ import countries from "../lib/countries";
 export default function SignUp() {
 
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from || "/";
     const [form, setForm]=useState({name:"", email:"", password:"", confirm:"", resident:""});
     const [showPass, setShowPass] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
@@ -79,7 +81,7 @@ export default function SignUp() {
                 resident: form.resident,
             });
             setSuccess(true);
-            setTimeout(() => navigate("/"), 1200);
+            setTimeout(() => navigate(from, { replace: true }), 1200);
         } catch (err) {
             setServerError(
                 err.response?.data?.message || "Something went wrong. Please try again."
@@ -150,7 +152,7 @@ export default function SignUp() {
                                 <p className="text-gray-500 mb-6">Your account has been created and you're now signed in.</p>
                                 <button
                                     type="button"
-                                    onClick={() => navigate("/")}
+                                    onClick={() => navigate(from, { replace: true })}
                                     className="inline-flex items-center gap-2 text-orange-500 font-semibold hover:text-orange-600 transition-colors"
                                 >
                                     <ArrowLeft className="w-4 h-4" />
@@ -168,7 +170,7 @@ export default function SignUp() {
                                     <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Create an account</h1>
                                     <p className="text-gray-500 text-sm">
                                         Already have one?{" "}
-                                        <a href="#login" className="text-orange-500 font-semibold hover:text-orange-600 transition-colors">Log in</a>
+                                        <Link to="/login" state={{ from }} className="text-orange-500 font-semibold hover:text-orange-600 transition-colors">Log in</Link>
                                     </p>
                                 </div>
 
