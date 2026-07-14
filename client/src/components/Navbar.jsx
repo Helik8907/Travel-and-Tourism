@@ -74,7 +74,7 @@ export default function Navbar() {
           <div className="flex h-16 lg:h-20 items-center justify-between">
             {/* Logo */}
             <NavLink
-              to="/home"
+              to="/"
               className="flex items-center gap-2 font-bold text-xl tracking-tight text-white shrink-0"
             >
               <Compass className="w-7 h-7 text-orange-400" strokeWidth={1.75} />
@@ -246,8 +246,8 @@ export default function Navbar() {
             className="fixed inset-0 z-[60] bg-teal-950 lg:hidden"
           >
             <div className="flex items-center justify-between px-4 sm:px-6 h-16">
-              <a
-                href="#home"
+              <NavLink
+                to="/"
                 className="flex items-center gap-2 font-bold text-xl tracking-tight text-white"
                 onClick={() => setMobileOpen(false)}
               >
@@ -256,7 +256,7 @@ export default function Navbar() {
                   strokeWidth={1.75}
                 />
                 <span>Wanderly</span>
-              </a>
+              </NavLink>
               <button
                 aria-label="Close menu"
                 onClick={() => setMobileOpen(false)}

@@ -7,7 +7,7 @@ import LoginPage from './pages/LoginPage'
 import NotFound from './pages/NotFound'
 import BookNow from './pages/BookNow'
 import Experiences from './pages/Experiences'
-import Destinations from './pages/Destinations'
+import Destinations from './pages/DestinationsPage'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import DestinationDetail from './pages/DestinationDetail'
 
