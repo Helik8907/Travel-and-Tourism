@@ -13,12 +13,19 @@ import {
   ChevronRight,
   Heart,
   Share2,
-  User,
-  ThumbsUp,
+  Plus,
 } from "lucide-react";
 import { getDestination, toggleLikeDestination } from "../lib/destinations/destinations";
-import { getCurrentUser } from "../lib/auth/auth";
+import {
+  getDestinationReviews,
+  createReview,
+  updateReview,
+  deleteReview,
+} from "../lib/reviews/reviews";
+import { getCurrentUser, refreshSession } from "../lib/auth/auth";
 import AuthPromptModal from "../components/auth/AuthPromptModal";
+import ReviewForm from "../components/reviews/reviewForm";
+import ReviewCard from "../components/reviews/reviewCard";
 
 const typeColors = {
   Beach: "bg-sky-500/90",
@@ -148,45 +155,6 @@ function ImageGallery({ images, requireAuth, liked, likeCount, onToggleLike }) {
   );
 }
 
-// Single review card
-function ReviewCard({ review, index }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1, duration: 0.4 }}
-      className="bg-white rounded-xl p-5 border border-gray-100"
-    >
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-            <User className="w-5 h-5 text-orange-500" strokeWidth={1.75} />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-900">{review.user}</p>
-            <p className="text-xs text-gray-400">{review.date}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-1">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star
-              key={i}
-              className={`w-3.5 h-3.5 ${i < review.rating ? "text-yellow-400" : "text-gray-200"}`}
-              fill={i < review.rating}
-            />
-          ))}
-        </div>
-      </div>
-      <p className="text-sm text-gray-600 leading-relaxed mb-3">{review.text}</p>
-      <button className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-orange-500 transition-colors">
-        <ThumbsUp className="w-3.5 h-3.5" strokeWidth={1.75} />
-        Helpful ({review.likes})
-      </button>
-    </motion.div>
-  );
-}
-
 export default function DestinationDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -198,6 +166,10 @@ export default function DestinationDetail() {
   const [saved, setSaved] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [reviews, setReviews] = useState([]);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [editingReview, setEditingReview] = useState(null);
+  const currentUser = getCurrentUser();
 
   const requireAuth = (action) => {
     if (!getCurrentUser()) {
@@ -219,10 +191,49 @@ export default function DestinationDetail() {
       const data = await toggleLikeDestination(id);
       setLiked(data.liked);
       setLikeCount(data.like_count);
+      await refreshSession();
     } catch (err) {
       setLiked(prevLiked);
       setLikeCount(prevCount);
     }
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const data = await getDestinationReviews(id);
+      setReviews(data.reviews);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleReviewSubmit = async ({ rating, comment }) => {
+    if (editingReview) {
+      await updateReview(editingReview._id, { rating, comment });
+    } else {
+      await createReview(id, { rating, comment });
+    }
+    await Promise.all([fetchReviews(), refetchDestination()]);
+  };
+
+  const handleEditReview = (review) => {
+    setEditingReview(review);
+    setShowReviewModal(true);
+  };
+
+  const handleDeleteReview = async (review) => {
+    if (!window.confirm("Delete this review?")) return;
+    try {
+      await deleteReview(review._id);
+      await Promise.all([fetchReviews(), refetchDestination()]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const refetchDestination = async () => {
+    const data = await getDestination(id);
+    setDestination(data.destination);
   };
 
   useEffect(() => {
@@ -243,11 +254,8 @@ export default function DestinationDetail() {
     };
 
     fetchDestination();
+    fetchReviews();
   }, [id]);
-
-  const reviews = destination?.reviews?.filter(
-    (r) => typeof r === "object" && r !== null
-  ) ?? [];
 
   if (loading) {
     return (
@@ -419,13 +427,32 @@ export default function DestinationDetail() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
             >
-              <h2 className="text-xl font-bold text-white mb-4">
-                Traveler Reviews
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-white">Traveler Reviews</h2>
+                <button
+                  onClick={() =>
+                    requireAuth(() => {
+                      setEditingReview(null);
+                      setShowReviewModal(true);
+                    })
+                  }
+                  className="flex items-center gap-1.5 text-sm font-semibold text-orange-400 hover:text-orange-300 transition-colors"
+                >
+                  <Plus className="w-4 h-4" strokeWidth={2} />
+                  Add Review
+                </button>
+              </div>
               {reviews.length > 0 ? (
                 <div className="space-y-4">
                   {reviews.map((review, i) => (
-                    <ReviewCard key={review._id} review={review} index={i} />
+                    <ReviewCard
+                      key={review._id}
+                      review={review}
+                      index={i}
+                      isOwn={currentUser?.id === review.userId?._id}
+                      onEdit={() => handleEditReview(review)}
+                      onDelete={() => handleDeleteReview(review)}
+                    />
                   ))}
                 </div>
               ) : (
@@ -501,6 +528,17 @@ export default function DestinationDetail() {
           onClose={() => setShowAuthModal(false)}
           onLogin={() => navigate("/login", { state: { from: location } })}
           onSignup={() => navigate("/signup", { state: { from: location } })}
+        />
+      )}
+
+      {showReviewModal && (
+        <ReviewForm
+          review={editingReview}
+          onClose={() => {
+            setShowReviewModal(false);
+            setEditingReview(null);
+          }}
+          onSubmit={handleReviewSubmit}
         />
       )}
     </div>
