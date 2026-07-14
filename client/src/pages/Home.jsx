@@ -1,4 +1,3 @@
-import DestinationSection from '../components/DestinationSection'
 import Hero from '../components/Hero'
 import Navbar from '../components/Navbar'
 
@@ -7,7 +6,6 @@ function Home() {
         <>
             <div className="min-h-screen bg-bgLight font-sans">
                 <Hero/>
-                <DestinationSection/>
             </div>
         </>
     )
