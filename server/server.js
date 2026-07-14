@@ -10,6 +10,7 @@ const signupRoutes = require('./routes/signup');
 const logoutRoutes = require('./routes/logout');
 const meRoutes = require('./routes/me');
 const destinationRoutes = require('./routes/destination');
+const reviewRoutes = require('./routes/review');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use('/api/signup', signupRoutes);
 app.use('/api/logout', logoutRoutes);
 app.use('/api/me', meRoutes);
 app.use('/api/destinations', destinationRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 connectDB = async () => {
     try {

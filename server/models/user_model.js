@@ -58,9 +58,19 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
-    destinations_id: [{
+    destinations_created: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Destination',
+    }],
+
+    destinations_liked: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Destination',
+    }],
+
+    reviews_created: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Review',
     }],
   },
   {

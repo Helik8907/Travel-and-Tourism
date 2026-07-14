@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Search, Compass, LogOut } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { getCurrentUser, logout, onAuthChange, refreshSession } from "../lib/auth/auth";
@@ -18,6 +18,7 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hovered, setHovered] = useState(null);
@@ -201,12 +202,14 @@ export default function Navbar() {
                 <>
                   <NavLink
                     to="/login"
+                    state={{ from: location.pathname }}
                     className="text-sm font-semibold px-4 py-2 rounded-full border border-orange-400/60 text-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300"
                   >
                     Log in
                   </NavLink>
                   <NavLink
                     to="/signup"
+                    state={{ from: location.pathname }}
                     className="text-sm font-semibold px-4 py-2 rounded-full border border-orange-400/60 text-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300"
                   >
                     Sign up
@@ -347,6 +350,7 @@ export default function Navbar() {
                   <div className="flex gap-3">
                     <NavLink
                       to="/login"
+                      state={{ from: location.pathname }}
                       onClick={() => setMobileOpen(false)}
                       className="flex-1 text-center text-base font-semibold px-5 py-3 rounded-full border border-white/20 text-white hover:bg-white/10 transition-colors"
                     >
@@ -354,6 +358,7 @@ export default function Navbar() {
                     </NavLink>
                     <NavLink
                       to="/signUp"
+                      state={{ from: location.pathname }}
                       onClick={() => setMobileOpen(false)}
                       className="flex-1 text-center text-base font-semibold px-5 py-3 rounded-full border border-orange-400/60 text-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300"
                     >

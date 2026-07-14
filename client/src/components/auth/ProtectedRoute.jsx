@@ -30,13 +30,27 @@ export default function ProtectedRoute({ requireAuth = true, roles }) {
 
     const goTo = (path) => navigate(path, { state: { from: location } });
 
+    const declineAuth = () => {
+        const idx = window.history.state?.idx;
+        if (typeof idx === "number" && idx > 0) {
+            navigate(-1);
+        } else {
+            navigate("/", { replace: true });
+        }
+    };
+
     if (requireAuth && !user) {
         return (
-            <AuthPromptModal
-                onClose={() => navigate("/", { replace: true })}
-                onLogin={() => goTo("/login")}
-                onSignup={() => goTo("/signup")}
-            />
+            <>
+                <div className="pointer-events-none select-none" aria-hidden="true">
+                    <Outlet />
+                </div>
+                <AuthPromptModal
+                    onClose={declineAuth}
+                    onLogin={() => goTo("/login")}
+                    onSignup={() => goTo("/signup")}
+                />
+            </>
         );
     }
 

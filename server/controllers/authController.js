@@ -15,6 +15,7 @@ const toSafeUser = (user) => ({
   name: user.name,
   email: user.email,
   role: user.role,
+  destinations_liked: user.destinations_liked,
 });
 
 const sendAuthResponse = (res, status, user) => {
