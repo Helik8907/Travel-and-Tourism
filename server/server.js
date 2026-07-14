@@ -1,4 +1,6 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const { port,mongoUrl } = require('./config/config');
 const mongoose = require('mongoose');
 const requestLogger = require('./middleware/requestLogger');
@@ -11,10 +13,10 @@ const destinationRoutes = require('./routes/destination');
 const reviewRoutes = require('./routes/review');
 const searchRoute=require("./routes/serch");
 const app = express();
-const registrationRoute=require("./routes/registration");
-const mongoose=require("mongoose");
 
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(requestLogger);
 
 app.use('/api/login', loginRoutes);
@@ -44,6 +46,3 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
-//registration route
-app.use("/",registrationRoute);
