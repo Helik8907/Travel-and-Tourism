@@ -155,6 +155,13 @@ function ImageGallery({ images, requireAuth, liked, likeCount, onToggleLike }) {
   );
 }
 
+function formatTimeTake(timeTake) {
+  if (!timeTake) return "";
+  const { min, max } = timeTake;
+  const unit = (max && max !== min ? max : min) === 1 ? "hour" : "hours";
+  return max && max !== min ? `${min}-${max} ${unit}` : `${min} ${unit}`;
+}
+
 export default function DestinationDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -179,7 +186,8 @@ export default function DestinationDetail() {
     action();
   };
 
-  const handleBookTrip = () => requireAuth(() => navigate("/bookNow"));
+  const handlePlanTrip = () =>
+    navigate("/planner", { state: { destinationId: destination._id } });
   const handleSaveToWishlist = () => requireAuth(() => setSaved((s) => !s));
 
   const handleToggleLike = async () => {
@@ -367,7 +375,7 @@ export default function DestinationDetail() {
                   <h3 className="text-sm font-bold text-white">Recommended Stay</h3>
                 </div>
                 <p className="text-2xl font-bold text-white mb-1">
-                  {destination.time_take}
+                  {formatTimeTake(destination.time_take)}
                 </p>
                 <p className="text-xs text-white/50">To fully experience the area</p>
               </div>
@@ -491,7 +499,7 @@ export default function DestinationDetail() {
                 <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
                   <p className="text-xs text-gray-400 mb-1">Duration</p>
                   <p className="text-sm font-semibold text-gray-700">
-                    {destination.time_take}
+                    {formatTimeTake(destination.time_take)}
                   </p>
                 </div>
               </div>
@@ -499,10 +507,10 @@ export default function DestinationDetail() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={handleBookTrip}
+                onClick={handlePlanTrip}
                 className="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-colors shadow-lg shadow-orange-500/20 mb-3"
               >
-                Book This Trip
+                Plan Trip
               </motion.button>
 
               <button

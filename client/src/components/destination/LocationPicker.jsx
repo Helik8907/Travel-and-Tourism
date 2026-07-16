@@ -57,8 +57,8 @@ function DraggableMarker({ position, onChange }) {
   );
 }
 
-// Geocodes name/city/country into map coordinates (OpenStreetMap Nominatim, no API key needed)
-export default function LocationPicker({ name, city, country, coordinates, onChange }) {
+// Geocodes name/city/state/country into map coordinates (OpenStreetMap Nominatim, no API key needed)
+export default function LocationPicker({ name, city, state, country, coordinates, onChange }) {
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState(null);
   const lastQueryRef = useRef(null);
@@ -88,7 +88,7 @@ export default function LocationPicker({ name, city, country, coordinates, onCha
   };
 
   const handleLocate = () => {
-    const query = [name, city, country].filter(Boolean).join(", ");
+    const query = [name, city, state, country].filter(Boolean).join(", ");
     if (!query) {
       setError("Enter a name, city or country first.");
       return;
@@ -99,7 +99,7 @@ export default function LocationPicker({ name, city, country, coordinates, onCha
 
   // Auto-fetch once name, city and country are all filled in
   useEffect(() => {
-    const query = [name, city, country].filter(Boolean).join(", ");
+    const query = [name, city, state, country].filter(Boolean).join(", ");
     if (!name || !city || !country || query === lastQueryRef.current) return;
 
     const timeout = setTimeout(() => {
@@ -109,7 +109,7 @@ export default function LocationPicker({ name, city, country, coordinates, onCha
 
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, city, country]);
+  }, [name, city, state, country]);
 
   return (
     <div className="mb-4">

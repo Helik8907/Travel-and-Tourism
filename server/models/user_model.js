@@ -72,6 +72,11 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Review',
     }],
+
+    itineraries: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Itinerary',
+    }],
   },
   {
     timestamps: true, 
