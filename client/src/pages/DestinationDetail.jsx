@@ -461,13 +461,14 @@ export default function DestinationDetail() {
             </motion.div>
           </div>
 
-          {/* Right column - sticky booking card */}
+          {/* Right column - sticky booking card, vertically centered below the navbar while scrolling */}
           <div className="lg:col-span-1">
+            <div className="lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:flex lg:items-center">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="sticky top-6 bg-white rounded-2xl p-6 shadow-xl"
+              className="w-full bg-white rounded-2xl p-6 shadow-xl"
             >
               <div className="mb-4">
                 <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
@@ -519,6 +520,7 @@ export default function DestinationDetail() {
                 Free cancellation up to 48 hours before departure
               </p>
             </motion.div>
+            </div>
           </div>
         </div>
       </div>
