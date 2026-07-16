@@ -13,6 +13,11 @@ const destinationSchema = new mongoose.Schema(
       required: true,
     },
 
+    state: {
+      type: String,
+      required: true,
+    },
+
     country: {
       type: String,
       enum: [
@@ -138,7 +143,14 @@ const destinationSchema = new mongoose.Schema(
     },
 
     time_take: {
-      type: String,
+      min: {
+        type: Number,
+        required: true,
+      },
+      max: {
+        type: Number,
+        required: true,
+      },
     },
 
     created_by: {

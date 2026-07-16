@@ -11,7 +11,7 @@ const byPrefixAndName = { fas: { user: faUser } };
 const NAV_LINKS = [
   { label: "Destinations", href: "/destinations" },
   { label: "Experiences", href: "/experiences" },
-  { label: "Trip planner", href: "/planner" },
+  { label: "My Itinerary", href: "/itineraries" },
   { label: "About", href: "/about" },
   { label: "Blog", href: "/blog" },
 ];
@@ -225,12 +225,12 @@ export default function Navbar() {
                 </>
               )}
 
-              {/* Book now */}
+              {/* Make a Trip */}
               <NavLink
-                to="/bookNow"
+                to="/planner"
                 className="font-semibold text-sm px-5 py-2.5 rounded-full bg-orange-500 hover:bg-orange-600 text-white transition-colors shadow-lg shadow-orange-500/20"
               >
-                Book now
+                Make a Trip
               </NavLink>
             </div>
 
@@ -384,11 +384,11 @@ export default function Navbar() {
                   </div>
                 )}
                 <NavLink
-                  to="/bookNow"
+                  to="/planner"
                   onClick={() => setMobileOpen(false)}
                   className="block text-center font-semibold px-5 py-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white transition-colors"
                 >
-                  Book now
+                  Make a Trip
                 </NavLink>
               </motion.li>
             </motion.ul>
