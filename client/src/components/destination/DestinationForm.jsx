@@ -104,6 +104,7 @@ function MultiSelect({ label, options, selected, onChange }) {
 export default function DestinationForm({ destination, onSubmit, submitLabel }) {
   const [name, setName] = useState(destination?.name ?? "");
   const [city, setCity] = useState(destination?.city ?? "");
+  const [state, setState] = useState(destination?.state ?? "");
   const [country, setCountry] = useState(destination?.country ?? "");
   const [type, setType] = useState(destination?.type ?? []);
   const [description, setDescription] = useState(destination?.description ?? "");
@@ -115,7 +116,8 @@ export default function DestinationForm({ destination, onSubmit, submitLabel }) 
   const [maxTemp, setMaxTemp] = useState(destination?.weather?.max_temp ?? "");
   const [condition, setCondition] = useState(destination?.weather?.condition ?? "");
   const [entryReq, setEntryReq] = useState(destination?.entry_req?.length ? destination.entry_req : [""]);
-  const [timeTake, setTimeTake] = useState(destination?.time_take ?? "");
+  const [timeTakeMin, setTimeTakeMin] = useState(destination?.time_take?.min ?? "");
+  const [timeTakeMax, setTimeTakeMax] = useState(destination?.time_take?.max ?? "");
   const [coordinates, setCoordinates] = useState(
     destination?.cordinates?.lat != null && destination?.cordinates?.lng != null
       ? destination.cordinates
@@ -126,12 +128,21 @@ export default function DestinationForm({ destination, onSubmit, submitLabel }) 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
     setError(null);
+
+    const minVal = Number(timeTakeMin);
+    const maxVal = Number(timeTakeMax);
+    if (maxVal !== 0 && maxVal <= minVal) {
+      setError("Max time must be 0 or greater than min time.");
+      return;
+    }
+
+    setSubmitting(true);
     try {
       await onSubmit({
         name,
         city,
+        state,
         country,
         type,
         description,
@@ -144,7 +155,10 @@ export default function DestinationForm({ destination, onSubmit, submitLabel }) 
           condition: condition || undefined,
         },
         entry_req: entryReq.map((r) => r.trim()).filter(Boolean),
-        time_take: timeTake,
+        time_take: {
+          min: minVal,
+          max: maxVal,
+        },
         cordinates: coordinates ?? undefined,
       });
     } catch (err) {
@@ -179,7 +193,7 @@ export default function DestinationForm({ destination, onSubmit, submitLabel }) 
           className={`${inputClass} mb-4`}
         />
 
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-3 gap-4 mb-4">
           <div>
             <label className={labelClass}>City</label>
             <input
@@ -187,6 +201,17 @@ export default function DestinationForm({ destination, onSubmit, submitLabel }) 
               value={city}
               onChange={(e) => setCity(e.target.value)}
               placeholder="e.g. Oia"
+              required
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>State</label>
+            <input
+              type="text"
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+              placeholder="e.g. South Aegean"
               required
               className={inputClass}
             />
@@ -214,6 +239,7 @@ export default function DestinationForm({ destination, onSubmit, submitLabel }) 
         <LocationPicker
           name={name}
           city={city}
+          state={state}
           country={country}
           coordinates={coordinates}
           onChange={setCoordinates}
@@ -307,14 +333,26 @@ export default function DestinationForm({ destination, onSubmit, submitLabel }) 
           onChange={setEntryReq}
         />
 
-        <label className={labelClass}>Recommended time to take</label>
-        <input
-          type="text"
-          value={timeTake}
-          onChange={(e) => setTimeTake(e.target.value)}
-          placeholder="e.g. 5 days"
-          className={`${inputClass} mb-4`}
-        />
+        <label className={labelClass}>Recommended time to take (hours)</label>
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <input
+            type="number"
+            min="1"
+            value={timeTakeMin}
+            onChange={(e) => setTimeTakeMin(e.target.value)}
+            placeholder="Min"
+            required
+            className={inputClass}
+          />
+          <input
+            type="number"
+            min="0"
+            value={timeTakeMax}
+            onChange={(e) => setTimeTakeMax(e.target.value)}
+            placeholder="Max"
+            className={inputClass}
+          />
+        </div>
 
         {error && <p className="text-red-500 text-xs mb-3">{error}</p>}
 
