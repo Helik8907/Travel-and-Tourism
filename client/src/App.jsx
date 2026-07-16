@@ -15,6 +15,7 @@ import ProfileListPage from './pages/ProfileListPage'
 import AddDestinationPage from './pages/AddDestinationPage'
 import EditDestinationPage from './pages/EditDestinationPage'
 import ScrollToTop from './components/ScrollToTop'
+import TripPlanner from './pages/TripPlanner'
 
 function App() {
   return (
@@ -24,11 +25,15 @@ function App() {
         <Routes>
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<LoginPage />} />
+         
           <Route element={<Layout />}>
             <Route element={<ProtectedRoute requireAuth={false} />}>
               <Route path="/" element={<Home />} />
               <Route path="/destinations" element={<Destinations />} />
               <Route path='/destinationDetail/:id' element={<DestinationDetail/>}/>
+
+              {/* for testing  */}
+               <Route path="/planner" element={<TripPlanner/>}/>
             </Route>
             <Route element={<ProtectedRoute />}>
               <Route path="/bookNow" element={<BookNow />} />
