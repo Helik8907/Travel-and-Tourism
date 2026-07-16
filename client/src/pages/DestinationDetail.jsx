@@ -155,6 +155,13 @@ function ImageGallery({ images, requireAuth, liked, likeCount, onToggleLike }) {
   );
 }
 
+function formatTimeTake(timeTake) {
+  if (!timeTake) return "";
+  const { min, max } = timeTake;
+  const unit = (max && max !== min ? max : min) === 1 ? "hour" : "hours";
+  return max && max !== min ? `${min}-${max} ${unit}` : `${min} ${unit}`;
+}
+
 export default function DestinationDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -179,7 +186,8 @@ export default function DestinationDetail() {
     action();
   };
 
-  const handleBookTrip = () => requireAuth(() => navigate("/bookNow"));
+  const handlePlanTrip = () =>
+    navigate("/planner", { state: { destinationId: destination._id } });
   const handleSaveToWishlist = () => requireAuth(() => setSaved((s) => !s));
 
   const handleToggleLike = async () => {
@@ -367,7 +375,7 @@ export default function DestinationDetail() {
                   <h3 className="text-sm font-bold text-white">Recommended Stay</h3>
                 </div>
                 <p className="text-2xl font-bold text-white mb-1">
-                  {destination.time_take}
+                  {formatTimeTake(destination.time_take)}
                 </p>
                 <p className="text-xs text-white/50">To fully experience the area</p>
               </div>
@@ -461,13 +469,14 @@ export default function DestinationDetail() {
             </motion.div>
           </div>
 
-          {/* Right column - sticky booking card */}
+          {/* Right column - sticky booking card, vertically centered below the navbar while scrolling */}
           <div className="lg:col-span-1">
+            <div className="lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:flex lg:items-center">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="sticky top-6 bg-white rounded-2xl p-6 shadow-xl"
+              className="w-full bg-white rounded-2xl p-6 shadow-xl"
             >
               <div className="mb-4">
                 <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
@@ -490,7 +499,7 @@ export default function DestinationDetail() {
                 <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
                   <p className="text-xs text-gray-400 mb-1">Duration</p>
                   <p className="text-sm font-semibold text-gray-700">
-                    {destination.time_take}
+                    {formatTimeTake(destination.time_take)}
                   </p>
                 </div>
               </div>
@@ -498,10 +507,10 @@ export default function DestinationDetail() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={handleBookTrip}
+                onClick={handlePlanTrip}
                 className="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-colors shadow-lg shadow-orange-500/20 mb-3"
               >
-                Book This Trip
+                Plan Trip
               </motion.button>
 
               <button
@@ -519,6 +528,7 @@ export default function DestinationDetail() {
                 Free cancellation up to 48 hours before departure
               </p>
             </motion.div>
+            </div>
           </div>
         </div>
       </div>

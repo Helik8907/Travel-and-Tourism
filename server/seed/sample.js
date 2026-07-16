@@ -9,6 +9,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890101",
     name: "Taj Mahal and Agra Fort",
     city: "Agra",
+    state: "Uttar Pradesh",
     country: "India",
     cordinates: { lat: 27.1751, lng: 78.0421 },
     type: ["Historical", "Cultural"],
@@ -20,7 +21,7 @@ const destinationsData = [
     entry_req: ["Passport/ID required", "Ticket needed for monument entry"],
     avg_rating: 4.9,
     review_count: 0,
-    time_take: "1 Day"
+    time_take: { min: 1, max: 1 }
   },
 
   // 2. Goa (Beach/Adventure)
@@ -28,6 +29,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890102",
     name: "Calangute Beach and Water Sports",
     city: "Goa",
+    state: "Goa",
     country: "India",
     cordinates: { lat: 15.5449, lng: 73.7636 },
     type: ["Beach", "Adventure"],
@@ -39,7 +41,7 @@ const destinationsData = [
     entry_req: ["Free entry to beach", "Paid water sports packages"],
     avg_rating: 4.4,
     review_count: 0,
-    time_take: "1-2 Days"
+    time_take: { min: 1, max: 2 }
   },
 
   // 3. Leh Ladakh (Mountain/Adventure/Nature)
@@ -47,6 +49,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890103",
     name: "Pangong Tso Lake",
     city: "Leh Ladakh",
+    state: "Ladakh",
     country: "India",
     cordinates: { lat: 33.75, lng: 78.6167 },
     type: ["Mountain", "Adventure", "Nature"],
@@ -58,7 +61,7 @@ const destinationsData = [
     entry_req: ["Inner Line Permit (ILP) required for domestic/foreign tourists"],
     avg_rating: 4.8,
     review_count: 0,
-    time_take: "2 Days"
+    time_take: { min: 2, max: 2 }
   },
 
   // 4. Jaipur (Cultural/Historical/City)
@@ -66,6 +69,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890104",
     name: "Amer Fort and Hawa Mahal",
     city: "Jaipur",
+    state: "Rajasthan",
     country: "India",
     cordinates: { lat: 26.9855, lng: 75.8513 },
     type: ["Historical", "Cultural", "City"],
@@ -77,7 +81,7 @@ const destinationsData = [
     entry_req: ["Composite entry ticket recommended"],
     avg_rating: 4.7,
     review_count: 0,
-    time_take: "1-2 Days"
+    time_take: { min: 1, max: 2 }
   },
 
   // 5. Munnar (Nature/Mountain)
@@ -85,6 +89,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890105",
     name: "Tata Tea Plantations & Eravikulam",
     city: "Munnar",
+    state: "Kerala",
     country: "India",
     cordinates: { lat: 10.0889, lng: 77.0595 },
     type: ["Nature", "Mountain"],
@@ -96,7 +101,7 @@ const destinationsData = [
     entry_req: ["National Park entry fee applies"],
     avg_rating: 4.6,
     review_count: 0,
-    time_take: "2 Days"
+    time_take: { min: 2, max: 2 }
   },
 
   // 6. Varanasi (Cultural/Historical)
@@ -104,6 +109,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890106",
     name: "Ganga Aarti at Dashashwamedh Ghat",
     city: "Varanasi",
+    state: "Uttar Pradesh",
     country: "India",
     cordinates: { lat: 25.3109, lng: 83.0107 },
     type: ["Cultural", "Historical"],
@@ -115,7 +121,7 @@ const destinationsData = [
     entry_req: ["Free public viewing", "Paid boat rides available"],
     avg_rating: 4.9,
     review_count: 0,
-    time_take: "1 Day"
+    time_take: { min: 1, max: 1 }
   },
 
   // 7. Ranthambore (Nature/Adventure)
@@ -123,6 +129,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890107",
     name: "Ranthambore National Park Tiger Safari",
     city: "Sawai Madhopur",
+    state: "Rajasthan",
     country: "India",
     cordinates: { lat: 26.0173, lng: 76.5026 },
     type: ["Nature", "Adventure"],
@@ -134,7 +141,7 @@ const destinationsData = [
     entry_req: ["Advance online safari booking mandatory"],
     avg_rating: 4.5,
     review_count: 0,
-    time_take: "2 Days"
+    time_take: { min: 2, max: 2 }
   },
 
   // 8. Rishikesh (Adventure/Cultural)
@@ -142,6 +149,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890108",
     name: "White Water Rafting and Yoga Ashrams",
     city: "Rishikesh",
+    state: "Uttarakhand",
     country: "India",
     cordinates: { lat: 30.0869, lng: 78.2676 },
     type: ["Adventure", "Cultural"],
@@ -153,7 +161,7 @@ const destinationsData = [
     entry_req: ["Medical fitness self-declaration for rafting"],
     avg_rating: 4.7,
     review_count: 0,
-    time_take: "2-3 Days"
+    time_take: { min: 2, max: 3 }
   },
 
   // 9. Alleppey (Nature/Other)
@@ -161,6 +169,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890109",
     name: "Kerala Backwaters Houseboat Cruise",
     city: "Alleppey",
+    state: "Kerala",
     country: "India",
     cordinates: { lat: 9.4981, lng: 76.3388 },
     type: ["Nature", "Other"],
@@ -172,7 +181,7 @@ const destinationsData = [
     entry_req: ["Prior houseboat booking highly recommended"],
     avg_rating: 4.6,
     review_count: 0,
-    time_take: "1-2 Days"
+    time_take: { min: 1, max: 2 }
   },
 
   // 10. Hampi (Historical/Cultural)
@@ -180,6 +189,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890110",
     name: "Virupaksha Temple and Ruins",
     city: "Hampi",
+    state: "Karnataka",
     country: "India",
     cordinates: { lat: 15.335, lng: 76.46 },
     type: ["Historical", "Cultural"],
@@ -191,13 +201,14 @@ const destinationsData = [
     entry_req: ["ASI Monument entry ticket required"],
     avg_rating: 4.8,
     review_count: 0,
-    time_take: "2-3 Days"
+    time_take: { min: 2, max: 3 }
   },
   //11.mumbai
   {
     _id: "65cb76e4f3a2b1cd4e890501",
     name: "Gateway of India and Marine Drive",
     city: "Mumbai",
+    state: "Maharashtra",
     country: "India",
     cordinates: { lat: 18.922, lng: 72.8347 },
     type: ["City", "Cultural"],
@@ -209,7 +220,7 @@ const destinationsData = [
     entry_req: ["Free public access", "Security screening at Gateway"],
     avg_rating: 4.6,
     review_count: 0,
-    time_take: "1 Day"
+    time_take: { min: 1, max: 1 }
   },
 
   // 12. Darjeeling (Mountain/Nature)
@@ -217,6 +228,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890502",
     name: "Tiger Hill Sunrise and Toy Train",
     city: "Darjeeling",
+    state: "West Bengal",
     country: "India",
     cordinates: { lat: 27.041, lng: 88.2663 },
     type: ["Mountain", "Nature"],
@@ -228,7 +240,7 @@ const destinationsData = [
     entry_req: ["Toy train tickets must be booked via IRCTC"],
     avg_rating: 4.7,
     review_count: 0,
-    time_take: "2 Days"
+    time_take: { min: 2, max: 2 }
   },
 
   // 13. Jaisalmer (Historical/Adventure/Cultural)
@@ -236,6 +248,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890503",
     name: "Sam Sand Dunes Camping & Desert Safari",
     city: "Jaisalmer",
+    state: "Rajasthan",
     country: "India",
     cordinates: { lat: 26.9157, lng: 70.9083 },
     type: ["Historical", "Adventure", "Cultural"],
@@ -247,7 +260,7 @@ const destinationsData = [
     entry_req: ["Prior booking for desert camps required"],
     avg_rating: 4.5,
     review_count: 0,
-    time_take: "1-2 Days"
+    time_take: { min: 1, max: 2 }
   },
 
   // 14. Amritsar (Cultural/Historical)
@@ -255,6 +268,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890504",
     name: "The Golden Temple (Harmandir Sahib)",
     city: "Amritsar",
+    state: "Punjab",
     country: "India",
     cordinates: { lat: 31.62, lng: 74.8765 },
     type: ["Cultural", "Historical"],
@@ -266,7 +280,7 @@ const destinationsData = [
     entry_req: ["Head covering required", "Feet must be washed before entry"],
     avg_rating: 5.0,
     review_count: 0,
-    time_take: "1 Day"
+    time_take: { min: 1, max: 1 }
   },
 
   // 15. Havelock Island (Beach/Adventure/Nature)
@@ -274,6 +288,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890505",
     name: "Radhanagar Beach and Scuba Diving",
     city: "Andaman and Nicobar",
+    state: "Andaman and Nicobar Islands",
     country: "India",
     cordinates: { lat: 12.0325, lng: 92.953 },
     type: ["Beach", "Adventure", "Nature"],
@@ -285,7 +300,7 @@ const destinationsData = [
     entry_req: ["Ferry booking from Port Blair required", "Scuba requires medical form"],
     avg_rating: 4.9,
     review_count: 0,
-    time_take: "3 Days"
+    time_take: { min: 3, max: 3 }
   },
 
   // 16. Udaipur (Historical/Cultural/City)
@@ -293,6 +308,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890506",
     name: "Lake Pichola Boat Cruise & City Palace",
     city: "Udaipur",
+    state: "Rajasthan",
     country: "India",
     cordinates: { lat: 24.5854, lng: 73.6833 },
     type: ["Historical", "Cultural", "City"],
@@ -304,7 +320,7 @@ const destinationsData = [
     entry_req: ["Palace entry ticket separate from boat cruise"],
     avg_rating: 4.8,
     review_count: 0,
-    time_take: "2 Days"
+    time_take: { min: 2, max: 2 }
   },
 
   // 17. Kaziranga (Nature/Adventure)
@@ -312,6 +328,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890507",
     name: "One-Horned Rhinoceros Wildlife Safari",
     city: "Kaziranga",
+    state: "Assam",
     country: "India",
     cordinates: { lat: 26.5775, lng: 93.1714 },
     type: ["Nature", "Adventure"],
@@ -323,7 +340,7 @@ const destinationsData = [
     entry_req: ["Park closed during monsoon months"],
     avg_rating: 4.6,
     review_count: 0,
-    time_take: "2 Days"
+    time_take: { min: 2, max: 2 }
   },
 
   // 18. Ooty (Mountain/Nature)
@@ -331,6 +348,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890508",
     name: "Botanical Gardens and Doddabetta Peak",
     city: "Ooty",
+    state: "Tamil Nadu",
     country: "India",
     cordinates: { lat: 11.4064, lng: 76.6932 },
     type: ["Mountain", "Nature"],
@@ -342,7 +360,7 @@ const destinationsData = [
     entry_req: ["Nominal eco-tax at city boundary"],
     avg_rating: 4.3,
     review_count: 0,
-    time_take: "1-2 Days"
+    time_take: { min: 1, max: 2 }
   },
 
   // 19. Khajuraho (Historical/Cultural)
@@ -350,6 +368,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890509",
     name: "Erotic Temples Complex",
     city: "Khajuraho",
+    state: "Madhya Pradesh",
     country: "India",
     cordinates: { lat: 24.8318, lng: 79.9199 },
     type: ["Historical", "Cultural"],
@@ -361,7 +380,7 @@ const destinationsData = [
     entry_req: ["ASI ticket needed for Western Group of temples"],
     avg_rating: 4.6,
     review_count: 0,
-    time_take: "1 Day"
+    time_take: { min: 1, max: 1 }
   },
 
   // 20. Pondicherry (Cultural/Beach/Other)
@@ -369,6 +388,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890510",
     name: "French Quarter and Promenade Beach",
     city: "Pondicherry",
+    state: "Puducherry",
     country: "India",
     cordinates: { lat: 11.9139, lng: 79.8145 },
     type: ["Cultural", "Beach", "Other"],
@@ -380,13 +400,14 @@ const destinationsData = [
     entry_req: ["Free access", "Vehicles barred from promenade after 6 PM"],
     avg_rating: 4.5,
     review_count: 0,
-    time_take: "2 Days"
+    time_take: { min: 2, max: 2 }
   },
   // 21. Shimla (Mountain/Nature/Historical)
   {
     _id: "65cb76e4f3a2b1cd4e890701",
     name: "The Ridge and Kalka-Shimla Toy Train",
     city: "Shimla",
+    state: "Himachal Pradesh",
     country: "India",
     cordinates: { lat: 31.1048, lng: 77.1734 },
     type: ["Mountain", "Nature", "Historical"],
@@ -398,7 +419,7 @@ const destinationsData = [
     entry_req: ["Free access to city landmarks", "Toy train tickets required via IRCTC"],
     avg_rating: 4.4,
     review_count: 0,
-    time_take: "2 Days"
+    time_take: { min: 2, max: 2 }
   },
 
   // 22. Mysore (Cultural/Historical)
@@ -406,6 +427,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890702",
     name: "Mysore Palace and Chamundi Hill",
     city: "Mysore",
+    state: "Karnataka",
     country: "India",
     cordinates: { lat: 12.3052, lng: 76.6552 },
     type: ["Cultural", "Historical"],
@@ -417,7 +439,7 @@ const destinationsData = [
     entry_req: ["Palace entry fee applicable", "Footwear must be deposited outside"],
     avg_rating: 4.8,
     review_count: 0,
-    time_take: "1-2 Days"
+    time_take: { min: 1, max: 2 }
   },
 
   // 23. Khajjiar (Nature/Mountain)
@@ -425,6 +447,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890703",
     name: "Khajjiar Lake and Cedar Forests",
     city: "Chamba",
+    state: "Himachal Pradesh",
     country: "India",
     cordinates: { lat: 32.5468, lng: 76.0567 },
     type: ["Nature", "Mountain"],
@@ -436,7 +459,7 @@ const destinationsData = [
     entry_req: ["Eco-tourism fee at entrance"],
     avg_rating: 4.5,
     review_count: 0,
-    time_take: "1 Day"
+    time_take: { min: 1, max: 1 }
   },
 
   // 24. Mahabalipuram (Historical/Cultural/Beach)
@@ -444,6 +467,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890704",
     name: "Shore Temple and Five Rathas",
     city: "Mahabalipuram",
+    state: "Tamil Nadu",
     country: "India",
     cordinates: { lat: 12.6208, lng: 80.1982 },
     type: ["Historical", "Cultural", "Beach"],
@@ -455,7 +479,7 @@ const destinationsData = [
     entry_req: ["Single ASI ticket grants entry to all core monuments"],
     avg_rating: 4.7,
     review_count: 0,
-    time_take: "1 Day"
+    time_take: { min: 1, max: 1 }
   },
 
   // 25. Gulmarg (Mountain/Adventure)
@@ -463,6 +487,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890705",
     name: "Gulmarg Gondola and Ski Resort",
     city: "Gulmarg",
+    state: "Jammu and Kashmir",
     country: "India",
     cordinates: { lat: 34.0484, lng: 74.3805 },
     type: ["Mountain", "Adventure"],
@@ -474,7 +499,7 @@ const destinationsData = [
     entry_req: ["Gondola tickets must be booked online well in advance"],
     avg_rating: 4.9,
     review_count: 0,
-    time_take: "2 Days"
+    time_take: { min: 2, max: 2 }
   },
 
   // 26. Pushkar (Cultural/Other)
@@ -482,6 +507,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890706",
     name: "Pushkar Lake and Brahma Temple",
     city: "Pushkar",
+    state: "Rajasthan",
     country: "India",
     cordinates: { lat: 26.4899, lng: 74.5511 },
     type: ["Cultural", "Other"],
@@ -493,7 +519,7 @@ const destinationsData = [
     entry_req: ["No footwear allowed near the lake ghats", "Alcohol & non-veg banned in town"],
     avg_rating: 4.3,
     review_count: 0,
-    time_take: "1-2 Days"
+    time_take: { min: 1, max: 2 }
   },
 
   // 27. Jim Corbett (Nature/Adventure)
@@ -501,6 +527,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890707",
     name: "Dhikala Zone Jungle Safari",
     city: "Ramnagar",
+    state: "Uttarakhand",
     country: "India",
     cordinates: { lat: 29.53, lng: 78.97 },
     type: ["Nature", "Adventure"],
@@ -512,7 +539,7 @@ const destinationsData = [
     entry_req: ["Night stay permits inside the forest zone must be reserved months prior"],
     avg_rating: 4.6,
     review_count: 0,
-    time_take: "2 Days"
+    time_take: { min: 2, max: 2 }
   },
 
   // 28. Gokarna (Beach/Nature)
@@ -520,6 +547,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890708",
     name: "Om Beach and Half Moon Beach Trek",
     city: "Gokarna",
+    state: "Karnataka",
     country: "India",
     cordinates: { lat: 14.514, lng: 74.316 },
     type: ["Beach", "Nature"],
@@ -531,7 +559,7 @@ const destinationsData = [
     entry_req: ["Free beach access", "Inter-beach ferries require nominal cash fee"],
     avg_rating: 4.5,
     review_count: 0,
-    time_take: "2 Days"
+    time_take: { min: 2, max: 2 }
   },
 
   // 29. Ajanta and Ellora (Historical/Cultural)
@@ -539,6 +567,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890709",
     name: "Kailash Temple and Rock-Cut Caves",
     city: "Aurangabad",
+    state: "Maharashtra",
     country: "India",
     cordinates: { lat: 20.0258, lng: 75.178 },
     type: ["Historical", "Cultural"],
@@ -550,7 +579,7 @@ const destinationsData = [
     entry_req: ["Caves remain closed on specific weekdays (Ajanta on Mondays, Ellora on Tuesdays)"],
     avg_rating: 4.9,
     review_count: 0,
-    time_take: "2 Days"
+    time_take: { min: 2, max: 2 }
   },
 
   // 30. Cherrapunji (Nature/Adventure)
@@ -558,6 +587,7 @@ const destinationsData = [
     _id: "65cb76e4f3a2b1cd4e890710",
     name: "Double Decker Living Root Bridges",
     city: "Cherrapunji",
+    state: "Meghalaya",
     country: "India",
     cordinates: { lat: 25.284, lng: 91.7273 },
     type: ["Nature", "Adventure"],
@@ -569,7 +599,7 @@ const destinationsData = [
     entry_req: ["Requires a steep downhill trek of roughly 3,000 steps"],
     avg_rating: 4.8,
     review_count: 0,
-    time_take: "1-2 Days"
+    time_take: { min: 1, max: 2 }
   },
   //outside india
   //31.peru(mach picchu)
@@ -577,6 +607,7 @@ const destinationsData = [
     "_id": "65cb76e4f3a2b1cd4e890711",
     "name": "Machu Picchu",
     "city": "Cusco Region",
+    "state": "Cusco",
     "country": "Peru",
     "cordinates": { "lat": -13.1631, "lng": -72.545 },
     "type": ["History", "Adventure", "Nature"],
@@ -589,7 +620,7 @@ const destinationsData = [
     "avg_rating": 4.9,
     "reviews": [],
     "review_count": 0,
-    "time_take": "1 Day"
+    "time_take": { min: 1, max: 1 }
   },
 
   //32.Oia
@@ -597,6 +628,7 @@ const destinationsData = [
     "_id": "65cb76e4f3a2b1cd4e890712",
     "name": "Santorini Caldera",
     "city": "Oia",
+    "state": "South Aegean",
     "country": "Greece",
     "cordinates": { "lat": 36.4614, "lng": 25.3753 },
     "type": ["Romance", "Relaxation", "Photography"],
@@ -609,7 +641,7 @@ const destinationsData = [
     "avg_rating": 4.7,
     "reviews": [],
     "review_count": 0,
-    "time_take": "2-3 Days"
+    "time_take": { min: 2, max: 3 }
   },
 
   //33.Kyoto
@@ -617,6 +649,7 @@ const destinationsData = [
     "_id": "65cb76e4f3a2b1cd4e890713",
     "name": "Fushimi Inari Shrine",
     "city": "Kyoto",
+    "state": "Kyoto Prefecture",
     "country": "Japan",
     "cordinates": { "lat": 34.9671, "lng": 135.7727 },
     "type": ["Culture", "History", "Spirituality"],
@@ -629,7 +662,7 @@ const destinationsData = [
     "avg_rating": 4.8,
     "reviews": [],
     "review_count": 0,
-    "time_take": "2-4 Hours"
+    "time_take": { min: 2, max: 4 }
   },
 
   //34.Alberta
@@ -637,6 +670,7 @@ const destinationsData = [
     "_id": "65cb76e4f3a2b1cd4e890714",
     "name": "Banff National Park",
     "city": "Alberta",
+    "state": "Alberta",
     "country": "Canada",
     "cordinates": { "lat": 51.4968, "lng": -115.9281 },
     "type": ["Nature", "Adventure", "Wildlife"],
@@ -649,13 +683,14 @@ const destinationsData = [
     "avg_rating": 4.9,
     "reviews": [],
     "review_count": 0,
-    "time_take": "3-5 Days"
+    "time_take": { min: 3, max: 5 }
   },
   //34.
   {
     "_id": "65cb76e4f3a2b1cd4e890715",
     "name": "The Great Pyramids of Giza",
     "city": "Cairo",
+    "state": "Giza Governorate",
     "country": "Egypt",
     "cordinates": { "lat": 29.9792, "lng": 31.1342 },
     "type": ["History", "Culture"],
@@ -668,13 +703,14 @@ const destinationsData = [
     "avg_rating": 4.6,
     "reviews": [],
     "review_count": 0,
-    "time_take": "1 Day"
+    "time_take": { min: 1, max: 1 }
   },
   //35
   {
     "_id": "65cb76e4f3a2b1cd4e890716",
     "name": "Eiffel Tower",
     "city": "Paris",
+    "state": "Île-de-France",
     "country": "France",
     "cordinates": { "lat": 48.8584, "lng": 2.2945 },
     "type": ["City Life", "Romance", "Architecture"],
@@ -687,13 +723,14 @@ const destinationsData = [
     "avg_rating": 4.7,
     "reviews": [],
     "review_count": 0,
-    "time_take": "2-3 Hours"
+    "time_take": { min: 2, max: 3 }
   },
   //36
   {
     "_id": "65cb76e4f3a2b1cd4e890717",
     "name": "Serengeti National Park",
     "city": "Arusha Region",
+    "state": "Arusha",
     "country": "Tanzania",
     "cordinates": { "lat": -2.3333, "lng": 34.8333 },
     "type": ["Wildlife", "Adventure", "Nature"],
@@ -706,13 +743,14 @@ const destinationsData = [
     "avg_rating": 4.9,
     "reviews": [],
     "review_count": 0,
-    "time_take": "3-4 Days"
+    "time_take": { min: 3, max: 4 }
   },
   //37
   {
     "_id": "65cb76e4f3a2b1cd4e890718",
     "name": "Sydney Opera House",
     "city": "Sydney",
+    "state": "New South Wales",
     "country": "Australia",
     "cordinates": { "lat": -33.8568, "lng": 151.2153 },
     "type": ["Architecture", "City Life", "Arts"],
@@ -725,13 +763,14 @@ const destinationsData = [
     "avg_rating": 4.7,
     "reviews": [],
     "review_count": 0,
-    "time_take": "2-3 Hours"
+    "time_take": { min: 2, max: 3 }
   },
   //38
   {
     "_id": "65cb76e4f3a2b1cd4e890719",
     "name": "Petra",
     "city": "Ma'an",
+    "state": "Ma'an Governorate",
     "country": "Jordan",
     "cordinates": { "lat": 30.3285, "lng": 35.4444 },
     "type": ["History", "Adventure", "Archaeology"],
@@ -744,13 +783,14 @@ const destinationsData = [
     "avg_rating": 4.8,
     "reviews": [],
     "review_count": 0,
-    "time_take": "1-2 Days"
+    "time_take": { min: 1, max: 2 }
   },
   //39
   {
     "_id": "65cb76e4f3a2b1cd4e89071a",
     "name": "Reykjavík Northern Lights",
     "city": "Reykjavík",
+    "state": "Capital Region",
     "country": "Iceland",
     "cordinates": { "lat": 64.1466, "lng": -21.9426 },
     "type": ["Nature", "Adventure", "Phenomenon"],
@@ -763,13 +803,14 @@ const destinationsData = [
     "avg_rating": 4.6,
     "reviews": [],
     "review_count": 0,
-    "time_take": "1-3 Nights"
+    "time_take": { min: 1, max: 3 }
   },
   //40
   {
     "_id": "65cb76e4f3a2b1cd4e89071b",
     "name": "Grand Canyon National Park",
     "city": "Arizona",
+    "state": "Arizona",
     "country": "USA",
     "cordinates": { "lat": 36.1069, "lng": -112.1129 },
     "type": ["Nature", "Adventure"],
@@ -782,13 +823,14 @@ const destinationsData = [
     "avg_rating": 4.9,
     "reviews": [],
     "review_count": 0,
-    "time_take": "1-2 Days"
+    "time_take": { min: 1, max: 2 }
   },
   //41
   {
     "_id": "65cb76e4f3a2b1cd4e89071c",
     "name": "Ha Long Bay",
     "city": "Quang Ninh",
+    "state": "Quảng Ninh",
     "country": "Vietnam",
     "cordinates": { "lat": 20.9101, "lng": 107.1839 },
     "type": ["Nature", "Relaxation", "Cruise"],
@@ -801,13 +843,14 @@ const destinationsData = [
     "avg_rating": 4.7,
     "reviews": [],
     "review_count": 0,
-    "time_take": "1-2 Days"
+    "time_take": { min: 1, max: 2 }
   },
   //42
   {
     "_id": "65cb76e4f3a2b1cd4e89071d",
     "name": "Colosseum",
     "city": "Rome",
+    "state": "Lazio",
     "country": "Italy",
     "cordinates": { "lat": 41.8902, "lng": 12.4922 },
     "type": ["History", "Architecture", "Culture"],
@@ -820,13 +863,14 @@ const destinationsData = [
     "avg_rating": 4.8,
     "reviews": [],
     "review_count": 0,
-    "time_take": "3-4 Hours"
+    "time_take": { min: 3, max: 4 }
   },
   //43
   {
     "_id": "65cb76e4f3a2b1cd4e89071e",
     "name": "Phi Phi Islands",
     "city": "Krabi",
+    "state": "Krabi Province",
     "country": "Thailand",
     "cordinates": { "lat": 7.7407, "lng": 98.7784 },
     "type": ["Beach", "Adventure", "Nightlife"],
@@ -839,13 +883,14 @@ const destinationsData = [
     "avg_rating": 4.6,
     "reviews": [],
     "review_count": 0,
-    "time_take": "1-3 Days"
+    "time_take": { min: 1, max: 3 }
   },
   //44
   {
     "_id": "65cb76e4f3a2b1cd4e89071f",
     "name": "Bagan Archaeological Zone",
     "city": "Bagan",
+    "state": "Mandalay Region",
     "country": "Myanmar",
     "cordinates": { "lat": 21.1717, "lng": 94.8585 },
     "type": ["History", "Spirituality", "Photography"],
@@ -858,13 +903,14 @@ const destinationsData = [
     "avg_rating": 4.8,
     "reviews": [],
     "review_count": 0,
-    "time_take": "2 Days"
+    "time_take": { min: 2, max: 2 }
   },
   //45
   {
     "_id": "65cb76e4f3a2b1cd4e890720",
     "name": "Table Mountain",
     "city": "Cape Town",
+    "state": "Western Cape",
     "country": "South Africa",
     "cordinates": { "lat": -33.9628, "lng": 18.4098 },
     "type": ["Nature", "Adventure", "City Life"],
@@ -877,13 +923,14 @@ const destinationsData = [
     "avg_rating": 4.8,
     "reviews": [],
     "review_count": 0,
-    "time_take": "3-5 Hours"
+    "time_take": { min: 3, max: 5 }
   },
   //46
   {
     "_id": "65cb76e4f3a2b1cd4e890721",
     "name": "Salar de Uyuni",
     "city": "Daniel Campos",
+    "state": "Potosí",
     "country": "Bolivia",
     "cordinates": { "lat": -20.1338, "lng": -67.4891 },
     "type": ["Nature", "Photography", "Adventure"],
@@ -896,13 +943,14 @@ const destinationsData = [
     "avg_rating": 4.9,
     "reviews": [],
     "review_count": 0,
-    "time_take": "1-3 Days"
+    "time_take": { min: 1, max: 3 }
   },
   //47
   {
     "_id": "65cb76e4f3a2b1cd4e890722",
     "name": "Jeju Island Scenic Coast",
     "city": "Jeju Province",
+    "state": "Jeju",
     "country": "South Korea",
     "cordinates": { "lat": 33.4996, "lng": 126.5312 },
     "type": ["Nature", "Relaxation"],
@@ -915,13 +963,14 @@ const destinationsData = [
     "avg_rating": 4.6,
     "reviews": [],
     "review_count": 0,
-    "time_take": "2-3 Days"
+    "time_take": { min: 2, max: 3 }
   },
   //48
   {
     "_id": "65cb76e4f3a2b1cd4e890723",
     "name": "Plitvice Lakes National Park",
     "city": "Lika-Senj",
+    "state": "Lika-Senj",
     "country": "Croatia",
     "cordinates": { "lat": 44.8654, "lng": 15.582 },
     "type": ["Nature", "Photography"],
@@ -934,13 +983,14 @@ const destinationsData = [
     "avg_rating": 4.8,
     "reviews": [],
     "review_count": 0,
-    "time_take": "1 Day"
+    "time_take": { min: 1, max: 1 }
   },
   //49
   {
     "_id": "65cb76e4f3a2b1cd4e890724",
     "name": "Milford Sound",
     "city": "Fiordland",
+    "state": "Southland",
     "country": "New Zealand",
     "cordinates": { "lat": -44.6714, "lng": 167.925 },
     "type": ["Nature", "Adventure", "Cruise"],
@@ -953,13 +1003,14 @@ const destinationsData = [
     "avg_rating": 4.9,
     "reviews": [],
     "review_count": 0,
-    "time_take": "1 Day"
+    "time_take": { min: 1, max: 1 }
   },
   //50
   {
     "_id": "65cb76e4f3a2b1cd4e890725",
     "name": "Chichen Itza",
     "city": "Yucatan",
+    "state": "Yucatán",
     "country": "Mexico",
     "cordinates": { "lat": 20.6843, "lng": -88.5678 },
     "type": ["History", "Architecture", "Culture"],
@@ -972,13 +1023,14 @@ const destinationsData = [
     "avg_rating": 4.7,
     "reviews": [],
     "review_count": 0,
-    "time_take": "4-6 Hours"
+    "time_take": { min: 4, max: 6 }
   },
   
   //51
   {
     name: 'Bali Beaches',
     city: 'Denpasar',
+    state: "Bali",
     country: 'Indonesia',
     cordinates: { lat: -8.6705, lng: 115.2126 },
     type: ['Beach', 'Nature', 'Adventure'],
@@ -988,12 +1040,13 @@ const destinationsData = [
     best_months: ['May', 'June', 'July', 'August'],
     weather: { min_temp: 24, max_temp: 33, condition: 'Tropical' },
     entry_req: ['Valid Passport', 'Visa on Arrival'],
-    time_take: '5 Days',
+    time_take: { min: 5, max: 5 },
   },
   //52
   {
     name: 'Mount Fuji',
     city: 'Fujinomiya',
+    state: "Shizuoka Prefecture",
     country: 'Japan',
     cordinates: { lat: 35.3606, lng: 138.7274 },
     type: ['Mountain', 'Nature', 'Adventure'],
@@ -1003,12 +1056,13 @@ const destinationsData = [
     best_months: ['July', 'August', 'September'],
     weather: { min_temp: 0, max_temp: 20, condition: 'Cold' },
     entry_req: ['Valid Passport', 'Visa'],
-    time_take: '2 Days',
+    time_take: { min: 2, max: 2 },
   },
   //53
   {
     name: 'Grand Canyon',
     city: 'Arizona',
+    state: "Arizona",
     country: 'United States',
     cordinates: { lat: 36.1069, lng: -112.1129 },
     type: ['Nature', 'Adventure'],
@@ -1018,12 +1072,13 @@ const destinationsData = [
     best_months: ['March', 'April', 'May', 'October'],
     weather: { min_temp: 5, max_temp: 35, condition: 'Arid' },
     entry_req: ['Valid Passport', 'US Visa'],
-    time_take: '3 Days',
+    time_take: { min: 3, max: 3 },
   },
   //54
   {
     name: 'Santorini',
     city: 'Thira',
+    state: "South Aegean",
     country: 'Greece',
     cordinates: { lat: 36.3932, lng: 25.4615 },
     type: ['Beach', 'City', 'Cultural'],
@@ -1033,12 +1088,13 @@ const destinationsData = [
     best_months: ['May', 'June', 'September', 'October'],
     weather: { min_temp: 15, max_temp: 30, condition: 'Mediterranean' },
     entry_req: ['Valid Passport', 'Schengen Visa'],
-    time_take: '4 Days',
+    time_take: { min: 4, max: 4 },
   },
   //55
   {
     name: 'Great Barrier Reef',
     city: 'Cairns',
+    state: "Queensland",
     country: 'Australia',
     cordinates: { lat: -16.9186, lng: 145.7781 },
     type: ['Beach', 'Nature', 'Adventure'],
@@ -1048,12 +1104,13 @@ const destinationsData = [
     best_months: ['June', 'July', 'August', 'September'],
     weather: { min_temp: 20, max_temp: 30, condition: 'Tropical' },
     entry_req: ['Valid Passport', 'Australian Visa'],
-    time_take: '5 Days',
+    time_take: { min: 5, max: 5 },
   },
   //56
   {
     name: 'Great Wall of China',
     city: 'Beijing',
+    state: "Beijing",
     country: 'China',
     cordinates: { lat: 40.4319, lng: 116.5704 },
     type: ['Historical', 'Cultural', 'Adventure'],
@@ -1063,7 +1120,7 @@ const destinationsData = [
     best_months: ['September', 'October', 'April', 'May'],
     weather: { min_temp: -5, max_temp: 30, condition: 'Continental' },
     entry_req: ['Valid Passport', 'Chinese Visa'],
-    time_take: '2 Days',
+    time_take: { min: 2, max: 2 },
   },
  
   
@@ -1071,6 +1128,7 @@ const destinationsData = [
   {
     name: 'Amazon Rainforest',
     city: 'Manaus',
+    state: "Amazonas",
     country: 'Brazil',
     cordinates: { lat: -3.119, lng: -60.0217 },
     type: ['Nature', 'Adventure'],
@@ -1080,12 +1138,13 @@ const destinationsData = [
     best_months: ['June', 'July', 'August'],
     weather: { min_temp: 22, max_temp: 33, condition: 'Tropical' },
     entry_req: ['Valid Passport', 'Visa'],
-    time_take: '5 Days',
+    time_take: { min: 5, max: 5 },
   },
   //58
   {
     name: 'Swiss Alps',
     city: 'Interlaken',
+    state: "Bern",
     country: 'Switzerland',
     cordinates: { lat: 46.6863, lng: 7.8632 },
     type: ['Mountain', 'Nature', 'Adventure'],
@@ -1095,12 +1154,13 @@ const destinationsData = [
     best_months: ['December', 'January', 'February', 'July', 'August'],
     weather: { min_temp: -10, max_temp: 20, condition: 'Alpine' },
     entry_req: ['Valid Passport', 'Schengen Visa'],
-    time_take: '5 Days',
+    time_take: { min: 5, max: 5 },
   },
   //59
   {
     name: 'Maldives Islands',
     city: 'Male',
+    state: "Kaafu Atoll",
     country: 'Maldives',
     cordinates: { lat: 4.1755, lng: 73.5093 },
     type: ['Beach', 'Nature'],
@@ -1110,12 +1170,13 @@ const destinationsData = [
     best_months: ['November', 'December', 'January', 'February', 'March'],
     weather: { min_temp: 25, max_temp: 32, condition: 'Tropical' },
     entry_req: ['Valid Passport', 'Visa on Arrival'],
-    time_take: '4 Days',
+    time_take: { min: 4, max: 4 },
   },
   //60
   {
     name: 'Iguazu Falls',
     city: 'Puerto Iguazu',
+    state: "Misiones",
     country: 'Argentina',
     cordinates: { lat: -25.6953, lng: -54.4367 },
     type: ['Nature', 'Adventure'],
@@ -1125,12 +1186,13 @@ const destinationsData = [
     best_months: ['March', 'April', 'May', 'September'],
     weather: { min_temp: 15, max_temp: 30, condition: 'Subtropical' },
     entry_req: ['Valid Passport', 'Visa'],
-    time_take: '3 Days',
+    time_take: { min: 3, max: 3 },
   }, 
   //61
   {
     name: 'Dubai Skyline',
     city: 'Dubai',
+    state: "Dubai",
     country: 'United Arab Emirates',
     cordinates: { lat: 25.2048, lng: 55.2708 },
     type: ['City', 'Adventure', 'Other'],
@@ -1140,7 +1202,7 @@ const destinationsData = [
     best_months: ['November', 'December', 'January', 'February', 'March'],
     weather: { min_temp: 15, max_temp: 40, condition: 'Arid' },
     entry_req: ['Valid Passport', 'Visa on Arrival'],
-    time_take: '4 Days',
+    time_take: { min: 4, max: 4 },
   },
 
   // 62 Neuschwanstein Castle
@@ -1148,6 +1210,7 @@ const destinationsData = [
   _id: "65cb76e4f3a2b1cd4e890726",
   name: "Neuschwanstein Castle",
   city: "Schwangau",
+  state: "Bavaria",
   country: "Germany",
   cordinates: { lat: 47.5576, lng: 10.7498 },
   type: ["Historical", "Architecture", "Nature"],
@@ -1161,7 +1224,7 @@ const destinationsData = [
   entry_req: ["Passport", "Advance castle ticket recommended"],
   avg_rating: 4.8,
   review_count: 0,
-  time_take: "1 Day"
+  time_take: { min: 1, max: 1 }
 },
 
 // 63. Sagrada Familia
@@ -1169,6 +1232,7 @@ const destinationsData = [
   _id: "65cb76e4f3a2b1cd4e890727",
   name: "Sagrada Familia",
   city: "Barcelona",
+  state: "Catalonia",
   country: "Spain",
   cordinates: { lat: 41.4036, lng: 2.1744 },
   type: ["Architecture", "Historical", "Cultural"],
@@ -1182,7 +1246,7 @@ const destinationsData = [
   entry_req: ["Passport", "Timed entry ticket"],
   avg_rating: 4.8,
   review_count: 0,
-  time_take: "3-4 Hours"
+  time_take: { min: 3, max: 4 }
 },
 
 // 64. Hallstatt
@@ -1190,6 +1254,7 @@ const destinationsData = [
   _id: "65cb76e4f3a2b1cd4e890728",
   name: "Hallstatt Village",
   city: "Hallstatt",
+  state: "Upper Austria",
   country: "Austria",
   cordinates: { lat: 47.5622, lng: 13.6493 },
   type: ["Nature", "Photography", "Cultural"],
@@ -1203,7 +1268,7 @@ const destinationsData = [
   entry_req: ["Passport"],
   avg_rating: 4.9,
   review_count: 0,
-  time_take: "1-2 Days"
+  time_take: { min: 1, max: 2 }
 },
 
 // 65. Big Ben & Westminster
@@ -1211,6 +1276,7 @@ const destinationsData = [
   _id: "65cb76e4f3a2b1cd4e890729",
   name: "Big Ben and Westminster Palace",
   city: "London",
+  state: "Greater London",
   country: "United Kingdom",
   cordinates: { lat: 51.5007, lng: -0.1246 },
   type: ["Historical", "City", "Architecture"],
@@ -1224,7 +1290,7 @@ const destinationsData = [
   entry_req: ["Passport", "Advance booking for Parliament tours"],
   avg_rating: 4.7,
   review_count: 0,
-  time_take: "4-6 Hours"
+  time_take: { min: 4, max: 6 }
 },
 
 // 66. Prague Castle
@@ -1232,6 +1298,7 @@ const destinationsData = [
   _id: "65cb76e4f3a2b1cd4e89072a",
   name: "Prague Castle and Charles Bridge",
   city: "Prague",
+  state: "Prague",
   country: "Czech Republic",
   cordinates: { lat: 50.0911, lng: 14.4016 },
   type: ["Historical", "Architecture", "Cultural"],
@@ -1245,7 +1312,7 @@ const destinationsData = [
   entry_req: ["Passport"],
   avg_rating: 4.8,
   review_count: 0,
-  time_take: "1 Day"
+  time_take: { min: 1, max: 1 }
 },
 
 // 67. Cinque Terre
@@ -1253,6 +1320,7 @@ const destinationsData = [
   _id: "65cb76e4f3a2b1cd4e89072b",
   name: "Cinque Terre",
   city: "La Spezia",
+  state: "Liguria",
   country: "Italy",
   cordinates: { lat: 44.127, lng: 9.705 },
   type: ["Nature", "Beach", "Photography"],
@@ -1266,7 +1334,7 @@ const destinationsData = [
   entry_req: ["Passport", "Cinque Terre Card for trails"],
   avg_rating: 4.8,
   review_count: 0,
-  time_take: "2 Days"
+  time_take: { min: 2, max: 2 }
 },
 
 // 68. Blue Lagoon
@@ -1274,6 +1342,7 @@ const destinationsData = [
   _id: "65cb76e4f3a2b1cd4e89072c",
   name: "Blue Lagoon",
   city: "Grindavík",
+  state: "Southern Peninsula",
   country: "Iceland",
   cordinates: { lat: 63.8804, lng: -22.4495 },
   type: ["Nature", "Relaxation", "Adventure"],
@@ -1287,7 +1356,7 @@ const destinationsData = [
   entry_req: ["Passport", "Advance reservation required"],
   avg_rating: 4.7,
   review_count: 0,
-  time_take: "4-6 Hours"
+  time_take: { min: 4, max: 6 }
 },
 
 // 69. Matterhorn
@@ -1295,6 +1364,7 @@ const destinationsData = [
   _id: "65cb76e4f3a2b1cd4e89072d",
   name: "Matterhorn and Zermatt",
   city: "Zermatt",
+  state: "Valais",
   country: "Switzerland",
   cordinates: { lat: 45.9763, lng: 7.6586 },
   type: ["Mountain", "Adventure", "Nature"],
@@ -1308,7 +1378,7 @@ const destinationsData = [
   entry_req: ["Passport", "Schengen Visa (if applicable)"],
   avg_rating: 4.9,
   review_count: 0,
-  time_take: "2-3 Days"
+  time_take: { min: 2, max: 3 }
 },
 
 ];
@@ -1321,7 +1391,7 @@ const seedDestinations = async () => {
   }
 
   const destinationNames = destinationsData.map((destination) => destination.name);
-  const existingDestinations = await Destination.find({ name: { $in: destinationNames } }).select('name cordinates');
+  const existingDestinations = await Destination.find({ name: { $in: destinationNames } }).select('name cordinates time_take state');
   const existingByName = new Map(existingDestinations.map((destination) => [destination.name, destination]));
 
   const newDestinations = destinationsData
@@ -1354,6 +1424,49 @@ const seedDestinations = async () => {
   if (backfillOps.length > 0) {
     await Destination.bulkWrite(backfillOps);
     console.log(successColor, `✅ ${backfillOps.length} existing destination(s) backfilled with coordinates...`);
+  }
+
+  const timeTakeBackfillOps = destinationsData
+    .filter((destination) => {
+      const existing = existingByName.get(destination.name);
+      return existing && typeof existing.time_take?.min !== 'number' && destination.time_take;
+    })
+    .map((destination) => ({
+      updateOne: {
+        filter: { name: destination.name },
+        update: { $set: { time_take: destination.time_take } },
+      },
+    }));
+
+  if (timeTakeBackfillOps.length > 0) {
+    await Destination.bulkWrite(timeTakeBackfillOps);
+    console.log(successColor, `✅ ${timeTakeBackfillOps.length} existing destination(s) backfilled with new time_take format...`);
+  }
+
+  const stateBackfillOps = destinationsData
+    .filter((destination) => {
+      const existing = existingByName.get(destination.name);
+      return existing && !existing.state && destination.state;
+    })
+    .map((destination) => ({
+      updateOne: {
+        filter: { name: destination.name },
+        update: { $set: { state: destination.state } },
+      },
+    }));
+
+  if (stateBackfillOps.length > 0) {
+    await Destination.bulkWrite(stateBackfillOps);
+    console.log(successColor, `✅ ${stateBackfillOps.length} existing destination(s) backfilled with state...`);
+  }
+
+  const unsetUnitResult = await Destination.collection.updateMany(
+    { 'time_take.unit': { $exists: true } },
+    { $unset: { 'time_take.unit': '' } }
+  );
+
+  if (unsetUnitResult.modifiedCount > 0) {
+    console.log(successColor, `✅ Removed stale time_take.unit field from ${unsetUnitResult.modifiedCount} destination(s)...`);
   }
 };
 

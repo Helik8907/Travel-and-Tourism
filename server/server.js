@@ -11,6 +11,7 @@ const logoutRoutes = require('./routes/logout');
 const meRoutes = require('./routes/me');
 const destinationRoutes = require('./routes/destination');
 const reviewRoutes = require('./routes/review');
+const itineraryRoutes = require('./routes/itinerary');
 const searchRoute=require("./routes/serch");
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/api/logout', logoutRoutes);
 app.use('/api/me', meRoutes);
 app.use('/api/destinations', destinationRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/itineraries', itineraryRoutes);
 //search route
 app.use('/api/get-amenities',searchRoute);
 
