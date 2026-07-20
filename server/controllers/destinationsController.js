@@ -3,13 +3,40 @@ const Destination = require('../models/destination_model');
 
 const destinationLoader = asyncHandler(async (req, res) => {
   try {
-    const destinations = await Destination.find();
-    res.status(200).json({ destinations });
-  } catch (error) {
-    console.log(error);
+    const city = req.query.city;
     
+    // 1. IF EMPTY: Return all destinations
+    if (!city || city.trim() === "") {
+      const destinations = await Destination.find();
+      return res.status(200).json({ destinations }); 
+    }
+    
+    // 2. IF NOT EMPTY: Run your exact Atlas Search pipeline
+    const destinations = await Destination.aggregate([
+      {
+        $search: {
+          index: "default", 
+          text: {
+            query: city,   
+            path: ["name", "city"], 
+            fuzzy: {
+              maxEdits: 2,       
+              prefixLength: 1    
+            }
+          }
+        }
+      }
+    ]);
+    
+    return res.status(200).json({ destinations }); 
+
+  } catch (error) {
+    console.error("Atlas Search Error:", error);
+    return res.status(500).json({ message: "Failed to fetch destinations" }); 
   }
 });
+  
+   
 
 const getDestination = asyncHandler(async (req, res) => {
   const destination = await Destination.findById(req.params.id);

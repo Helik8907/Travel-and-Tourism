@@ -24,6 +24,10 @@ export default function Navbar() {
   const [hovered, setHovered] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  
+  // 1. ADDED: State to track what the user is typing in the search bar
+  const [navSearch, setNavSearch] = useState("");
+  
   const [user, setUser] = useState(() => getCurrentUser());
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
@@ -47,6 +51,20 @@ export default function Navbar() {
     await logout();
     setUser(null);
     navigate("/");
+  };
+
+  // 2. ADDED: The submit handler for the search forms
+  const handleNavSearchSubmit = (e) => {
+    e.preventDefault();
+    if (navSearch.trim()) {
+      // Navigate to the destinations page with the query
+      navigate(`/destinations?city=${encodeURIComponent(navSearch.trim())}`);
+      
+      // Clean up: close menus and reset the search text
+      setSearchOpen(false);
+      setMobileOpen(false);
+      setNavSearch("");
+    }
   };
 
   useEffect(() => {
@@ -133,7 +151,9 @@ export default function Navbar() {
                       transition={{ type: "spring", stiffness: 300, damping: 28 }}
                       className="overflow-hidden ml-2"
                     >
-                      <div
+                      {/* 3. MODIFIED: Changed this div to a form and added onSubmit */}
+                      <form
+                        onSubmit={handleNavSearchSubmit}
                         className={`flex items-center rounded-full border transition-colors duration-300 ${
                           searchFocused
                             ? "border-orange-400/70 bg-white/10"
@@ -144,6 +164,8 @@ export default function Navbar() {
                           ref={searchInputRef}
                           type="text"
                           placeholder="Search destinations..."
+                          value={navSearch} // Bound to state
+                          onChange={(e) => setNavSearch(e.target.value)} // Updates state on typing
                           className="w-full bg-transparent text-white text-sm px-3 py-1.5 outline-none placeholder-white/40"
                           onFocus={() => setSearchFocused(true)}
                           onBlur={() => setSearchFocused(false)}
@@ -151,13 +173,14 @@ export default function Navbar() {
                             if (e.key === "Escape") setSearchOpen(false);
                           }}
                         />
-                      </div>
+                      </form>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
               <div className="w-px h-5 bg-white/20" />
 
+              {/* User Menu Container */}
               {user ? (
                 <div
                   className="relative"
@@ -296,7 +319,11 @@ export default function Navbar() {
                 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
               >
-                <div className="flex items-center rounded-full border border-white/20 bg-white/5 px-4 py-2.5 mb-4">
+                {/* 4. MODIFIED: Changed this div to a form for the mobile menu search */}
+                <form 
+                  onSubmit={handleNavSearchSubmit}
+                  className="flex items-center rounded-full border border-white/20 bg-white/5 px-4 py-2.5 mb-4"
+                >
                   <Search
                     className="w-5 h-5 text-white/50 mr-3 shrink-0"
                     strokeWidth={1.75}
@@ -304,9 +331,11 @@ export default function Navbar() {
                   <input
                     type="text"
                     placeholder="Search destinations..."
+                    value={navSearch} // Bound to state
+                    onChange={(e) => setNavSearch(e.target.value)} // Updates state on typing
                     className="w-full bg-transparent text-white text-base outline-none placeholder-white/40"
                   />
-                </div>
+                </form>
               </motion.li>
 
               {NAV_LINKS.map((link) => (

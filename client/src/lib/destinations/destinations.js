@@ -1,8 +1,11 @@
 import api from "../api";
 
-export const destinationLoader = async () => {
-    const { data } = await api.get("/destinations");
-    return data;
+export const destinationLoader = async (city = "") => {
+  // If city has text, add the query. Otherwise, just use "/destinations"
+  const url = city ? `/destinations?city=${encodeURIComponent(city)}` : "/destinations";
+  
+  const { data } = await api.get(url);
+  return data;
 };
 
 export const getDestination = async (id) => {

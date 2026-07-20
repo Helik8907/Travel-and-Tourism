@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Star, MapPin, ArrowRight, Loader, ChevronLeft, ChevronRight } from "lucide-react";
 import { destinationLoader } from "../lib/destinations/destinations";
@@ -58,7 +58,7 @@ function DestinationCard({ dest }) {
     >
       <div className="relative h-64 overflow-hidden">
         <motion.img
-          src={dest.images[0] || "/placeholder.jpg"}
+          src={dest.images?.[0] || "/placeholder.jpg"}
           alt={dest.name}
           className="w-full h-full object-cover"
           animate={{ scale: hovered ? 1.08 : 1 }}
@@ -186,12 +186,20 @@ function DestinationsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
+  
+  // Extract the city from the URL query parameters
+  const [searchParams] = useSearchParams();
+  const cityQuery = searchParams.get("city") || "";
 
   useEffect(() => {
     const fetchDestinations = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const data = await destinationLoader();
-        setDestinations(data.destinations);
+        // Pass the cityQuery to your API loader
+        const data = await destinationLoader(cityQuery);
+        setDestinations(data.destinations || []);
+        setPage(1); // Reset to first page on new search
       } catch (err) {
         setError(err.response?.data?.message || err.message);
       } finally {
@@ -200,7 +208,7 @@ function DestinationsPage() {
     };
 
     fetchDestinations();
-  }, []);
+  }, [cityQuery]); // Refetch if the URL changes
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -250,27 +258,35 @@ function DestinationsPage() {
           className="text-center mb-12"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-orange-500/10 text-orange-400 text-xs font-bold uppercase tracking-widest mb-4">
-            Popular Destinations
+            {cityQuery ? `Search Results for "${cityQuery}"` : "Popular Destinations"}
           </span>
           <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-            Where will you go next?
+            {cityQuery ? "Found these destinations" : "Where will you go next?"}
           </h2>
           <p className="text-white/60 text-base max-w-xl mx-auto">
-            Hand-picked destinations loved by thousands of travelers.
+            {cityQuery 
+              ? `Explore the best places matching your search.` 
+              : `Hand-picked destinations loved by thousands of travelers.`}
           </p>
         </motion.div>
 
-        <motion.div
-          key={page}
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {pagedDestinations.map((dest) => (
-            <DestinationCard key={dest._id} dest={dest} />
-          ))}
-        </motion.div>
+        {destinations.length === 0 ? (
+          <div className="text-center text-white/70 py-12">
+            No destinations found matching your criteria. Try another search!
+          </div>
+        ) : (
+          <motion.div
+            key={page}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {pagedDestinations.map((dest) => (
+              <DestinationCard key={dest._id} dest={dest} />
+            ))}
+          </motion.div>
+        )}
 
         <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
       </div>
