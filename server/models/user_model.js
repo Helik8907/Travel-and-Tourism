@@ -68,6 +68,21 @@ const userSchema = new mongoose.Schema(
       ref: 'Destination',
     }],
 
+    blogs_created: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Blog',
+    }],
+
+    blogs_liked: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Blog',
+    }],
+
+    blogs_disliked: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Blog',
+    }],
+
     reviews_created: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Review',
