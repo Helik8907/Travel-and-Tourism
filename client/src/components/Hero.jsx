@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, MapPin, Calendar, Users } from "lucide-react";
+// 1. Import useNavigate from React Router
+import { useNavigate } from "react-router-dom";
 
 const DESTINATIONS = [
     { name: "Taj Mahal", wikiTitle: "Taj Mahal" },
@@ -15,8 +17,12 @@ export default function Hero() {
         DESTINATIONS.map((d) => ({ ...d, image: null }))
     );
     const [index, setIndex] = useState(0);
+    
+    // 2. Add state for the search bar and initialize navigation
+    const [destination, setDestination] = useState("");
+    const navigate = useNavigate();
 
-    // fetch image using wikipedia free api
+    // Fetch images using wikipedia free api
     useEffect(() => {
         let cancelled = false;
 
@@ -51,6 +57,16 @@ export default function Hero() {
         const t = setInterval(() => setIndex((i) => (i + 1) % DESTINATIONS.length), 5000);
         return () => clearInterval(t);
     }, []);
+
+    // 3. Create the submit handler
+   const handleSearchSubmit = (e) => {
+        e.preventDefault(); // Prevent page refresh
+        
+        if (destination.trim()) {
+            // Navigate to EXACTLY /destination and append the city as a query parameter
+            navigate(`/destinations?city=${encodeURIComponent(destination.trim())}`);
+        }
+    };
 
     const current = slides[index];
 
@@ -87,12 +103,13 @@ export default function Hero() {
 
                 {/* Attribution */}
                 {current.image && (
-
-                    <img href={`https://en.wikipedia.org/wiki/${encodeURIComponent(current.wikiTitle)}`}
+                    <a href={`https://en.wikipedia.org/wiki/${encodeURIComponent(current.wikiTitle)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="absolute bottom-4 right-4 z-10 text-[11px] text-white/60 hover:text-white underline overflow-hidden"
-                    />
+                    >
+                        Wiki
+                    </a>
                 )}
 
                 {/* Content */}
@@ -145,21 +162,32 @@ export default function Hero() {
                         ))}
                     </div>
                 </div>
-
-                {/* Floating search card, overlapping the bottom edge */}
             </section>
+            
+            {/* Floating search card */}
             <motion.div
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="absolute left-1/2 -translate-x-1/2 bottom-6 sm:bottom-10 z-20 w-[92%] max-w-4xl"
             >
-                <div className="bg-white rounded-2xl shadow-xl shadow-black/20 p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-4 gap-4">
+                {/* 4. Changed this div to a form, added onSubmit, and wrapped ALL inputs */}
+                <form 
+                    onSubmit={handleSearchSubmit} 
+                    className="bg-white rounded-2xl shadow-xl shadow-black/20 p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-4 gap-4"
+                >
                     <div className="flex items-center gap-3 sm:border-r sm:border-slate-200 sm:pr-4">
                         <MapPin className="w-5 h-5 text-orange-500 shrink-0" />
                         <div className="text-left w-full">
                             <p className="text-xs text-slate-400 font-medium">Destination</p>
-                            <input type="text" placeholder="Where in India?" className="w-full text-sm font-medium text-slate-800 placeholder-slate-400 outline-none" />
+                            <input 
+                                type="text" 
+                                placeholder="Where in India?" 
+                                value={destination}
+                                onChange={(e) => setDestination(e.target.value)} // 5. Bound input to state
+                                className="w-full text-sm font-medium text-slate-800 placeholder-slate-400 outline-none" 
+                                required
+                            />
                         </div>
                     </div>
 
@@ -178,12 +206,16 @@ export default function Hero() {
                             <input type="text" placeholder="Add guests" className="w-full text-sm font-medium text-slate-800 placeholder-slate-400 outline-none" />
                         </div>
                     </div>
-
-                    <button className="flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 transition-colors text-white font-semibold rounded-xl py-3 sm:py-0">
+                     
+                    {/* Removed the nested <form> tag that was here */}
+                    <button 
+                        type="submit" 
+                        className="flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 transition-colors text-white font-semibold rounded-xl py-3 sm:py-0 w-full"
+                    >
                         <Search className="w-5 h-5" />
                         Search
                     </button>
-                </div>
+                </form>
             </motion.div>
         </div>
     );

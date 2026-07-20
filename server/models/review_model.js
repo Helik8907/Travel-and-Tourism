@@ -9,6 +9,12 @@ const reviewSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Destination'
   },
+
+  blogId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Blog'
+  },
+  
   rating: {
     type: Number,
     required: true,
