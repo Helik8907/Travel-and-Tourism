@@ -17,11 +17,11 @@ const destinationLoader = asyncHandler(async (req, res) => {
         $search: {
           index: "default", 
           text: {
-            query: city,   
-            path: ["name", "city"], 
+            query: city, //val from serch bar  
+            path: ["name", "city","state","country"], //path  where you want to check
             fuzzy: {
               maxEdits: 2,       
-              prefixLength: 1    
+              prefixLength: 0    
             }
           }
         }
