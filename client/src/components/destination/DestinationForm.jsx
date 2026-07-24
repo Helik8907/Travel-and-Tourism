@@ -126,16 +126,62 @@ export default function DestinationForm({ destination, onSubmit, submitLabel }) 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
+  const validateForm = () => {
+    const minCost = Number(costMin);
+    const maxCost = Number(costMax);
+    const minHours = Number(timeTakeMin);
+    const maxHours = Number(timeTakeMax);
+    const minTemperature = minTemp === "" ? null : Number(minTemp);
+    const maxTemperature = maxTemp === "" ? null : Number(maxTemp);
+
+    if (Number.isNaN(minCost) || Number.isNaN(maxCost)) {
+      return "Enter valid cost values.";
+    }
+    if (minCost <= 0) {
+      return "Min cost must be greater than 0.";
+    }
+    if (maxCost < 0) {
+      return "Max cost cannot be negative.";
+    }
+    if (maxCost !== 0 && maxCost <= minCost) {
+      return "Cost max must be 0 or greater than cost min.";
+    }
+    if (Number.isNaN(minHours) || Number.isNaN(maxHours)) {
+      return "Enter valid time values for recommended time.";
+    }
+    if (minHours <= 0) {
+      return "Min time must be greater than 0.";
+    }
+    if (maxHours < 0) {
+      return "Max time cannot be negative.";
+    }
+    if (maxHours !== 0 && maxHours <= minHours) {
+      return "Max time must be 0 or greater than min time.";
+    }
+    if (
+      minTemperature !== null &&
+      maxTemperature !== null &&
+      maxTemperature === 0 &&
+      maxTemperature <= minTemperature
+    ) {
+      return "Max temperature must be greater than min temperature.";
+    }
+
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
-    const minVal = Number(timeTakeMin);
-    const maxVal = Number(timeTakeMax);
-    if (maxVal !== 0 && maxVal <= minVal) {
-      setError("Max time must be 0 or greater than min time.");
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
       return;
     }
+
+    const minVal = Number(timeTakeMin);
+    const maxVal = Number(timeTakeMax);
 
     setSubmitting(true);
     try {
@@ -350,6 +396,7 @@ export default function DestinationForm({ destination, onSubmit, submitLabel }) 
             value={timeTakeMax}
             onChange={(e) => setTimeTakeMax(e.target.value)}
             placeholder="Max"
+            required
             className={inputClass}
           />
         </div>
