@@ -17,6 +17,7 @@ import EditDestinationPage from './pages/EditDestinationPage'
 import ScrollToTop from './components/ScrollToTop'
 import AddItinerary from './pages/AddItinerary'
 import MyItinerariesPage from './pages/MyItinerariesPage'
+import About from './pages/About'
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
               <Route path="/destinations" element={<Destinations />} />
               <Route path='/destinationDetail/:id' element={<DestinationDetail/>}/>
                <Route path="/planner" element={<AddItinerary/>}/>
+               <Route path="/about" element={<About/>}/>
             </Route>
             <Route element={<ProtectedRoute />}>
                <Route path="/itineraries" element={<MyItinerariesPage/>}/>
