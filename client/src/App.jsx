@@ -17,6 +17,7 @@ import EditDestinationPage from './pages/EditDestinationPage'
 import ScrollToTop from './components/ScrollToTop'
 import AddItinerary from './pages/AddItinerary'
 import MyItinerariesPage from './pages/MyItinerariesPage'
+import Blog from './pages/Blog'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route element={<ProtectedRoute requireAuth={false} />}>
               <Route path="/" element={<Home />} />
               <Route path="/destinations" element={<Destinations />} />
+              <Route path="/blog" element={<Blog />} />
               <Route path='/destinationDetail/:id' element={<DestinationDetail/>}/>
                <Route path="/planner" element={<AddItinerary/>}/>
             </Route>
