@@ -14,8 +14,20 @@ import {
   Heart,
   Share2,
   Plus,
+  Hotel,
+  Utensils,
+  ExternalLink,
+  Phone,
+  Globe,
+  Map as MapIcon,
 } from "lucide-react";
-import { getDestination, toggleLikeDestination } from "../lib/destinations/destinations";
+
+// 👉 Leaflet Map Imports
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+import { destinationLoader, getDestination, toggleLikeDestination } from "../lib/destinations/destinations";
 import {
   getDestinationReviews,
   createReview,
@@ -26,6 +38,69 @@ import { getCurrentUser, refreshSession } from "../lib/auth/auth";
 import AuthPromptModal from "../components/auth/AuthPromptModal";
 import ReviewForm from "../components/reviews/reviewForm";
 import ReviewCard from "../components/reviews/reviewCard";
+
+// Fix for default Leaflet marker icons in React
+const customIcon = new L.Icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
+
+// A green marker for the selected place
+const activeIcon = new L.Icon({
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
+
+// Helper component to auto-zoom map when a place is clicked
+function MapController({ center, activePlace }) {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (activePlace && center) {
+      const bounds = L.latLngBounds([
+        [center.lat, center.lng],
+        [activePlace.lat, activePlace.lng],
+      ]);
+      map.fitBounds(bounds, { padding: [50, 50], animate: true });
+    } else if (center) {
+      map.setView([center.lat, center.lng], 13, { animate: true });
+    }
+  }, [activePlace, center, map]);
+
+  return null;
+}
+
+// Distance Calculation (Haversine Formula) - Now stricter with Number()
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth's radius in km
+  
+  const l1 = Number(lat1);
+  const ln1 = Number(lon1);
+  const l2 = Number(lat2);
+  const ln2 = Number(lon2);
+
+  if (isNaN(l1) || isNaN(ln1) || isNaN(l2) || isNaN(ln2)) return 9999;
+
+  const dLat = (l2 - l1) * (Math.PI / 180);
+  const dLon = (ln2 - ln1) * (Math.PI / 180);
+  
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(l1 * (Math.PI / 180)) *
+      Math.cos(l2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+      
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Returns a raw Number for sorting
+}
 
 const typeColors = {
   Beach: "bg-sky-500/90",
@@ -167,6 +242,17 @@ export default function DestinationDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   const [destination, setDestination] = useState(null);
+  
+  const [relatedDestinations, setRelatedDestinations] = useState([]);
+  const [relatedIndex, setRelatedIndex] = useState(0); 
+  
+  const [nearbyHotels, setNearbyHotels] = useState([]);
+  const [nearbyRestaurants, setNearbyRestaurants] = useState([]);
+  const [nearbyLoading, setNearbyLoading] = useState(false);
+  const [placesTab, setPlacesTab] = useState("hotels");
+  
+  const [activePlace, setActivePlace] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -239,21 +325,147 @@ export default function DestinationDetail() {
     }
   };
 
-  const refetchDestination = async () => {
-    const data = await getDestination(id);
-    setDestination(data.destination);
+  // 👉 1. Bulletproof OpenStreetMap Fetcher
+  const fetchNearbyOSMPlaces = async (rawLat, rawLng) => {
+    let lat = Number(rawLat);
+    let lng = Number(rawLng);
+
+    if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
+      console.warn("⚠️ Invalid coordinates:", { rawLat, rawLng });
+      return;
+    }
+
+    // Auto-detect and fix swapped Lat/Lng in the database
+    if (lat > 50 && lng < 40) {
+      console.warn("⚠️ Lat/Lng appear swapped. Auto-correcting...");
+      [lat, lng] = [lng, lat];
+    }
+
+    setNearbyLoading(true);
+    try {
+      const query = `
+        [out:json][timeout:15];
+        (
+          node["tourism"~"hotel|guest_house|hostel|resort|motel"](around:3000,${lat},${lng});
+          way["tourism"~"hotel|guest_house|hostel|resort|motel"](around:3000,${lat},${lng});
+          relation["tourism"~"hotel|guest_house|hostel|resort|motel"](around:3000,${lat},${lng});
+          node["amenity"~"restaurant|cafe|fast_food|bar|food_court"](around:3000,${lat},${lng});
+          way["amenity"~"restaurant|cafe|fast_food|bar|food_court"](around:3000,${lat},${lng});
+          relation["amenity"~"restaurant|cafe|fast_food|bar|food_court"](around:3000,${lat},${lng});
+        );
+        out center 30;
+      `;
+
+      // Failover Server logic
+      const servers = [
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.kumi.systems/api/interpreter",
+        "https://maps.mail.ru/osm/tools/overpass/api/interpreter"
+      ];
+
+      let data = null;
+      for (const server of servers) {
+        try {
+          const res = await fetch(`${server}?data=${encodeURIComponent(query)}`);
+          if (res.ok) {
+            data = await res.json();
+            break;
+          }
+        } catch (e) {
+          console.warn(`Server ${server} failed, trying backup mirror...`);
+        }
+      }
+
+      if (!data || !data.elements) {
+        console.error("❌ Failed to fetch from all OpenStreetMap servers.");
+        return;
+      }
+
+      const hotels = [];
+      const restaurants = [];
+
+      data.elements.forEach((item) => {
+        if (!item.tags || !item.tags.name) return;
+
+        const placeLat = item.lat || item.center?.lat;
+        const placeLng = item.lon || item.center?.lon;
+
+        if (!placeLat || !placeLng) return;
+
+        const dist = getDistance(lat, lng, placeLat, placeLng);
+        if (dist > 5.0) return; // Discard outliers beyond 5km
+
+        const place = {
+          id: item.id,
+          name: item.tags.name,
+          type: item.tags.tourism || item.tags.amenity,
+          cuisine: item.tags.cuisine,
+          phone: item.tags.phone || item.tags["contact:phone"],
+          website: item.tags.website || item.tags["contact:website"],
+          street: item.tags["addr:street"]
+            ? `${item.tags["addr:street"]} ${item.tags["addr:housenumber"] || ""}`
+            : null,
+          lat: placeLat,
+          lng: placeLng,
+          distance: dist,
+        };
+
+        if (item.tags.tourism) {
+          hotels.push(place);
+        } else if (item.tags.amenity) {
+          restaurants.push(place);
+        }
+      });
+
+      // Sort strictly by the numeric distance
+      hotels.sort((a, b) => a.distance - b.distance);
+      restaurants.sort((a, b) => a.distance - b.distance);
+
+      setNearbyHotels(hotels.slice(0, 6));
+      setNearbyRestaurants(restaurants.slice(0, 6));
+    } catch (err) {
+      console.error("OSM Fetch Error (Normal in Dev Mode):", err);
+    } finally {
+      setNearbyLoading(false);
+    }
   };
 
   useEffect(() => {
-    const fetchDestination = async () => {
+    window.scrollTo(0, 0);
+    setRelatedIndex(0);
+    setActivePlace(null);
+    
+    const fetchDestinationData = async () => {
       setLoading(true);
       setError(null);
       try {
         const data = await getDestination(id);
-        setDestination(data.destination);
-        setLikeCount(data.destination.like_count ?? 0);
+        const dest = data.destination;
+        setDestination(dest);
+        setLikeCount(dest.like_count ?? 0);
         const user = getCurrentUser();
         setLiked(!!user?.destinations_liked?.includes(id));
+
+        const lat = dest.cordinates?.lat || dest.coordinates?.lat;
+        const lng = dest.cordinates?.lng || dest.coordinates?.lng;
+        if (lat && lng) {
+          fetchNearbyOSMPlaces(lat, lng);
+        }
+
+        if (dest.state) {
+          try {
+            const allRes = await destinationLoader(); 
+            const allDestinations = Array.isArray(allRes) ? allRes : (allRes.destinations || []);
+            
+            const filtered = allDestinations
+              .filter((d) => d.state === dest.state && d._id !== id)
+              .slice(0, 20);
+              
+            setRelatedDestinations(filtered);
+          } catch (relErr) {
+            console.error("Failed to fetch related destinations", relErr);
+          }
+        }
       } catch (err) {
         setError(err.response?.data?.message || err.message);
       } finally {
@@ -261,7 +473,7 @@ export default function DestinationDetail() {
       }
     };
 
-    fetchDestination();
+    fetchDestinationData();
     fetchReviews();
   }, [id]);
 
@@ -283,6 +495,16 @@ export default function DestinationDetail() {
       </div>
     );
   }
+
+  // 🛠️ Ensure the Leaflet Map also respects auto-corrected Lat/Lng!
+  let mapLat = Number(destination.cordinates?.lat || destination.coordinates?.lat);
+  let mapLng = Number(destination.cordinates?.lng || destination.coordinates?.lng);
+  if (mapLat > 50 && mapLng < 40) {
+    [mapLat, mapLng] = [mapLng, mapLat];
+  }
+  const correctedCenter = { lat: mapLat, lng: mapLng };
+
+  const activePlaces = placesTab === "hotels" ? nearbyHotels : nearbyRestaurants;
 
   return (
     <div className="min-h-screen bg-teal-950 pb-20">
@@ -381,36 +603,156 @@ export default function DestinationDetail() {
               </div>
             </motion.div>
 
-            {/* Best months */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-orange-400" strokeWidth={1.75} />
+            {/* 👉 OpenStreetMap Live Nearby Amenities with Interactive Map */}
+            {correctedCenter.lat && correctedCenter.lng && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 overflow-hidden"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Explore the Area</h2>
+                    <p className="text-xs text-white/50">Interactive map and nearby amenities</p>
+                  </div>
+
+                  <div className="flex bg-black/30 p-1 rounded-xl border border-white/10">
+                    <button
+                      onClick={() => {
+                        setPlacesTab("hotels");
+                        setActivePlace(null);
+                      }}
+                      className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                        placesTab === "hotels"
+                          ? "bg-orange-500 text-white shadow-lg"
+                          : "text-white/60 hover:text-white"
+                      }`}
+                    >
+                      <Hotel className="w-3.5 h-3.5" /> Hotels
+                    </button>
+                    <button
+                      onClick={() => {
+                        setPlacesTab("restaurants");
+                        setActivePlace(null);
+                      }}
+                      className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                        placesTab === "restaurants"
+                          ? "bg-orange-500 text-white shadow-lg"
+                          : "text-white/60 hover:text-white"
+                      }`}
+                    >
+                      <Utensils className="w-3.5 h-3.5" /> Restaurants
+                    </button>
+                  </div>
                 </div>
-                <h3 className="text-sm font-bold text-white">Best Time to Visit</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {destination.best_months?.map((m) => (
-                  <span
-                    key={m}
-                    className="px-4 py-2 rounded-xl bg-orange-500/10 text-orange-300 text-sm font-medium border border-orange-500/20"
-                  >
-                    {m}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
+
+                {/* The Map Component */}
+                <div className="w-full h-64 rounded-xl overflow-hidden mb-6 border border-white/10 relative z-0">
+                  <MapContainer center={[correctedCenter.lat, correctedCenter.lng]} zoom={13} scrollWheelZoom={false} className="w-full h-full">
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    
+                    <Marker position={[correctedCenter.lat, correctedCenter.lng]} icon={customIcon}>
+                      <Popup>
+                        <strong>{destination.name}</strong> <br />
+                        Destination Center
+                      </Popup>
+                    </Marker>
+
+                    {activePlace && (
+                      <>
+                        <Marker position={[activePlace.lat, activePlace.lng]} icon={activeIcon}>
+                          <Popup>
+                            <strong>{activePlace.name}</strong> <br />
+                            Distance: {activePlace.distance.toFixed(2)} km
+                          </Popup>
+                        </Marker>
+                        <Polyline 
+                          positions={[
+                            [correctedCenter.lat, correctedCenter.lng],
+                            [activePlace.lat, activePlace.lng]
+                          ]} 
+                          color="orange" 
+                          dashArray="5, 10"
+                        />
+                      </>
+                    )}
+                    
+                    <MapController center={correctedCenter} activePlace={activePlace} />
+                  </MapContainer>
+                </div>
+
+                {nearbyLoading ? (
+                  <div className="py-8 flex flex-col items-center justify-center gap-2">
+                    <div className="w-6 h-6 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
+                    <p className="text-xs text-white/50">Finding closest places near {destination.name}...</p>
+                  </div>
+                ) : activePlaces.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {activePlaces.map((place) => (
+                      <div
+                        key={place.id}
+                        onClick={() => setActivePlace(place)}
+                        className={`p-4 rounded-xl border flex flex-col justify-between cursor-pointer transition-all ${
+                          activePlace?.id === place.id
+                            ? "bg-orange-500/10 border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
+                            : "bg-white/5 border-white/10 hover:bg-white/10"
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <h3 className="text-white font-semibold text-base line-clamp-1 flex-grow">
+                              {place.name}
+                            </h3>
+                            {/* 👉 Format raw cuisine tags like 'fast_food' to 'fast food' */}
+                            <span className="text-[10px] px-2 py-0.5 rounded bg-orange-500/20 text-orange-300 capitalize border border-orange-500/30 whitespace-nowrap">
+                              {(place.cuisine || place.type).replace(/_/g, " ").replace(/;/g, ", ")}
+                            </span>
+                          </div>
+                          
+                          <p className="text-xs text-white/50 flex items-center gap-1.5 mb-3 line-clamp-1">
+                            <MapPin className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                            {place.street || "Location available on map"}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-3 text-white/60 text-sm mt-auto pt-3 border-t border-white/10">
+                          {place.phone && (
+                            <a href={`tel:${place.phone}`} title={place.phone} className="hover:text-white transition-colors" onClick={(e) => e.stopPropagation()}>
+                              <Phone className="w-4 h-4" />
+                            </a>
+                          )}
+                          {place.website && (
+                            <a href={place.website} target="_blank" rel="noreferrer" title="Website" className="hover:text-white transition-colors" onClick={(e) => e.stopPropagation()}>
+                              <Globe className="w-4 h-4" />
+                            </a>
+                          )}
+                          
+                          <span className="flex items-center gap-1.5 text-xs font-semibold text-orange-400 ml-auto">
+                            <MapIcon className="w-3.5 h-3.5" />
+                            {/* Format safely to 2 decimal places */}
+                            {place.distance.toFixed(2)} km
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-white/50 py-4 text-center">
+                    No {placesTab} found directly in OpenStreetMap near these coordinates.
+                  </p>
+                )}
+              </motion.div>
+            )}
 
             {/* Entry requirements */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.7 }}
               className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
             >
               <div className="flex items-center gap-3 mb-4">
@@ -433,7 +775,7 @@ export default function DestinationDetail() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
+              transition={{ delay: 0.8 }}
             >
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-white">Traveler Reviews</h2>
@@ -467,6 +809,83 @@ export default function DestinationDetail() {
                 <p className="text-white/50 text-sm">No reviews yet.</p>
               )}
             </motion.div>
+
+            {/* Related Destinations Render WITH ARROWS */}
+            {relatedDestinations.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+                className="mt-12"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-white">
+                    More to explore in {destination.state}
+                  </h2>
+                  
+                  {relatedDestinations.length > 2 && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setRelatedIndex((prev) => Math.max(0, prev - 2))}
+                        disabled={relatedIndex === 0}
+                        className={`p-2 rounded-full transition-colors ${
+                          relatedIndex === 0
+                            ? "bg-white/5 text-white/20 cursor-not-allowed"
+                            : "bg-white/10 text-white hover:bg-white/20"
+                        }`}
+                      >
+                        <ChevronLeft className="w-4 h-4" strokeWidth={2} />
+                      </button>
+                      <button
+                        onClick={() => setRelatedIndex((prev) => Math.min(relatedDestinations.length - 2, prev + 2))}
+                        disabled={relatedIndex >= relatedDestinations.length - 2}
+                        className={`p-2 rounded-full transition-colors ${
+                          relatedIndex >= relatedDestinations.length - 2
+                            ? "bg-white/5 text-white/20 cursor-not-allowed"
+                            : "bg-white/10 text-white hover:bg-white/20"
+                        }`}
+                      >
+                        <ChevronRight className="w-4 h-4" strokeWidth={2} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {relatedDestinations.slice(relatedIndex, relatedIndex + 2).map((dest) => (
+                    <motion.div
+                      key={dest._id}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="h-full"
+                    >
+                      <Link
+                        to={`/destinationDetail/${dest._id}`}
+                        className="group block bg-white/5 hover:bg-white/10 transition-colors rounded-2xl overflow-hidden border border-white/10 h-full"
+                      >
+                        <div className="h-40 w-full overflow-hidden relative">
+                          <img
+                            src={dest.images?.[0] || "/placeholder.jpg"}
+                            alt={dest.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-sm px-2 py-1 rounded-lg">
+                            <StarRating rating={dest.avg_rating} />
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <h3 className="text-white font-bold truncate text-lg">{dest.name}</h3>
+                          <p className="text-white/60 text-sm flex items-center gap-1 mt-1">
+                            <MapPin className="w-3.5 h-3.5" /> {dest.city}
+                          </p>
+                        </div>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
 
           {/* Right column - sticky booking card, vertically centered below the navbar while scrolling */}
@@ -551,6 +970,6 @@ export default function DestinationDetail() {
           onSubmit={handleReviewSubmit}
         />
       )}
-    </div>
+    </div> 
   );
 }
