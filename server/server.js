@@ -14,6 +14,7 @@ const destinationRoutes = require('./routes/destination');
 const reviewRoutes = require('./routes/review');
 const itineraryRoutes = require('./routes/itinerary');
 const blogRoutes = require('./routes/blog');
+const bookingRoutes = require('./routes/booking');
 const searchRoute=require("./routes/serch");
 const app = express();
 
@@ -30,6 +31,7 @@ app.use('/api/destinations', destinationRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/itineraries', itineraryRoutes);
 app.use('/api/blogs', blogRoutes);
+app.use('/api/bookings', bookingRoutes);
 //search route
 app.use('/api/get-amenities',searchRoute);
 
