@@ -1,6 +1,8 @@
+const mongoose = require('mongoose');
 const asyncHandler = require('../middleware/asyncHandler');
 const Destination = require('../models/destination_model');
 const createReactionHandlers = require('../utils/reactionHandlers');
+const { getCurrentWeather } = require('../utils/weather');
 
 const { toggleLike, toggleDislike } = createReactionHandlers(Destination, 'Destination', 'destinations');
 
@@ -172,6 +174,30 @@ const deleteDestination = asyncHandler(async (req, res) => {
   res.status(200).json({ message: 'Destination deleted' });
 });
 
+const getDestinationWeather = asyncHandler(async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(404).json({ message: 'Destination not found' });
+  }
+
+  const destination = await Destination.findById(req.params.id).select('cordinates');
+  if (!destination) {
+    return res.status(404).json({ message: 'Destination not found' });
+  }
+
+  const { lat, lng } = destination.cordinates || {};
+  if (lat == null || lng == null) {
+    return res.status(400).json({ message: 'This destination has no coordinates on record' });
+  }
+
+  try {
+    const weather = await getCurrentWeather(lat, lng);
+    res.status(200).json({ weather });
+  } catch (error) {
+    console.error('Live weather fetch failed:', error.message);
+    res.status(502).json({ message: 'Failed to fetch live weather' });
+  }
+});
+
 module.exports = {
   destinationLoader,
   getDestination,
@@ -180,4 +206,5 @@ module.exports = {
   deleteDestination,
   toggleLike,
   toggleDislike,
+  getDestinationWeather,
 };

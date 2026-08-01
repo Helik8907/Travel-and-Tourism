@@ -4,6 +4,7 @@ const cors = require('cors');
 const { port,mongoUrl } = require('./config/config');
 const mongoose = require('mongoose');
 const requestLogger = require('./middleware/requestLogger');
+const errorHandler = require('./middleware/errorHandler');
 const { successColor, errorColor } = require('./utils/colors');
 const loginRoutes = require('./routes/login');
 const signupRoutes = require('./routes/signup');
@@ -46,6 +47,8 @@ connectDB();
 app.get('/', (req, res) => {
   res.send({ message: 'Travel & Tourism API placeholder' });
 });
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
