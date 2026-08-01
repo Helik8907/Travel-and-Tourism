@@ -12,15 +12,27 @@ import {
   ChevronLeft,
   ChevronRight,
   Heart,
+  ThumbsDown,
   Share2,
   Plus,
 } from "lucide-react";
-import { getDestination, toggleLikeDestination } from "../lib/destinations/destinations";
+
+// 👉 Leaflet Map Imports
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+import {
+  destinationLoader,
+  getDestination,
+  toggleLikeDestination,
+  toggleDislikeDestination,
+} from "../lib/destinations/destinations";
 import {
   getDestinationReviews,
   createReview,
-  updateReview,
-  deleteReview,
+  toggleLikeReview,
+  toggleDislikeReview,
 } from "../lib/reviews/reviews";
 import { getCurrentUser, refreshSession } from "../lib/auth/auth";
 import AuthPromptModal from "../components/auth/AuthPromptModal";
@@ -58,7 +70,17 @@ function StarRating({ rating, count, size = "sm" }) {
 // Image gallery with animated transitions
 const SLIDE_INTERVAL = 4000;
 
-function ImageGallery({ images, requireAuth, liked, likeCount, onToggleLike }) {
+function ImageGallery({
+  images,
+  requireAuth,
+  liked,
+  likeCount,
+  onToggleLike,
+  disliked,
+  dislikeCount,
+  onToggleDislike,
+  isOwner,
+}) {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -103,15 +125,28 @@ function ImageGallery({ images, requireAuth, liked, likeCount, onToggleLike }) {
       </div>
 
       <div className="absolute top-4 right-4 flex items-center gap-2">
-        <button
-          onClick={() => requireAuth(onToggleLike)}
-          className={`h-10 px-3 rounded-full backdrop-blur-sm flex items-center gap-1.5 transition-colors ${
-            liked ? "bg-red-500/80 text-white" : "bg-black/20 text-white/80 hover:text-white"
-          }`}
-        >
-          <Heart className="w-5 h-5" fill={liked} strokeWidth={1.75} />
-          <span className="text-sm font-semibold">{likeCount}</span>
-        </button>
+        {!isOwner && (
+          <>
+            <button
+              onClick={() => requireAuth(onToggleLike)}
+              className={`h-10 px-3 rounded-full backdrop-blur-sm flex items-center gap-1.5 transition-colors ${
+                liked ? "bg-red-500/80 text-white" : "bg-black/20 text-white/80 hover:text-white"
+              }`}
+            >
+              <Heart className="w-5 h-5" fill={liked} strokeWidth={1.75} />
+              <span className="text-sm font-semibold">{likeCount}</span>
+            </button>
+            <button
+              onClick={() => requireAuth(onToggleDislike)}
+              className={`h-10 px-3 rounded-full backdrop-blur-sm flex items-center gap-1.5 transition-colors ${
+                disliked ? "bg-slate-500/80 text-white" : "bg-black/20 text-white/80 hover:text-white"
+              }`}
+            >
+              <ThumbsDown className="w-5 h-5" fill={disliked} strokeWidth={1.75} />
+              <span className="text-sm font-semibold">{dislikeCount}</span>
+            </button>
+          </>
+        )}
         <button className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-sm text-white/80 hover:text-white flex items-center justify-center transition-colors">
           <Share2 className="w-5 h-5" strokeWidth={1.75} />
         </button>
@@ -166,6 +201,7 @@ export default function DestinationDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const currentUser = getCurrentUser();
   const [destination, setDestination] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -173,10 +209,11 @@ export default function DestinationDetail() {
   const [saved, setSaved] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [disliked, setDisliked] = useState(false);
+  const [dislikeCount, setDislikeCount] = useState(0);
   const [reviews, setReviews] = useState([]);
+  const [reviewReactions, setReviewReactions] = useState({});
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [editingReview, setEditingReview] = useState(null);
-  const currentUser = getCurrentUser();
 
   const requireAuth = (action) => {
     if (!getCurrentUser()) {
@@ -193,16 +230,56 @@ export default function DestinationDetail() {
   const handleToggleLike = async () => {
     const prevLiked = liked;
     const prevCount = likeCount;
+    const prevDisliked = disliked;
+    const prevDislikeCount = dislikeCount;
+
     setLiked(!prevLiked);
     setLikeCount(prevCount + (prevLiked ? -1 : 1));
+    if (!prevLiked && prevDisliked) {
+      setDisliked(false);
+      setDislikeCount((c) => Math.max(0, c - 1));
+    }
+
     try {
       const data = await toggleLikeDestination(id);
       setLiked(data.liked);
       setLikeCount(data.like_count);
+      setDislikeCount(data.dislike_count);
+      if (data.liked) setDisliked(false);
       await refreshSession();
     } catch (err) {
       setLiked(prevLiked);
       setLikeCount(prevCount);
+      setDisliked(prevDisliked);
+      setDislikeCount(prevDislikeCount);
+    }
+  };
+
+  const handleToggleDislike = async () => {
+    const prevDisliked = disliked;
+    const prevDislikeCount = dislikeCount;
+    const prevLiked = liked;
+    const prevLikeCount = likeCount;
+
+    setDisliked(!prevDisliked);
+    setDislikeCount(prevDislikeCount + (prevDisliked ? -1 : 1));
+    if (!prevDisliked && prevLiked) {
+      setLiked(false);
+      setLikeCount((c) => Math.max(0, c - 1));
+    }
+
+    try {
+      const data = await toggleDislikeDestination(id);
+      setDisliked(data.disliked);
+      setDislikeCount(data.dislike_count);
+      setLikeCount(data.like_count);
+      if (data.disliked) setLiked(false);
+      await refreshSession();
+    } catch (err) {
+      setDisliked(prevDisliked);
+      setDislikeCount(prevDislikeCount);
+      setLiked(prevLiked);
+      setLikeCount(prevLikeCount);
     }
   };
 
@@ -210,38 +287,212 @@ export default function DestinationDetail() {
     try {
       const data = await getDestinationReviews(id);
       setReviews(data.reviews);
+
+      const user = getCurrentUser();
+      const likedIds = new Set(user?.reviews_liked ?? []);
+      const dislikedIds = new Set(user?.reviews_disliked ?? []);
+      const reactions = {};
+      data.reviews.forEach((r) => {
+        reactions[r._id] = { liked: likedIds.has(r._id), disliked: dislikedIds.has(r._id) };
+      });
+      setReviewReactions(reactions);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const updateReviewCounts = (reviewId, like_count, dislike_count) => {
+    setReviews((prev) =>
+      prev.map((r) => (r._id === reviewId ? { ...r, like_count, dislike_count } : r))
+    );
+  };
+
+  const handleLikeReview = async (reviewId) => {
+    const review = reviews.find((r) => r._id === reviewId);
+    if (!review) return;
+    const prevReaction = reviewReactions[reviewId] || { liked: false, disliked: false };
+    const prevLikeCount = review.like_count ?? 0;
+    const prevDislikeCount = review.dislike_count ?? 0;
+    const nextLiked = !prevReaction.liked;
+
+    setReviewReactions((prev) => ({
+      ...prev,
+      [reviewId]: { liked: nextLiked, disliked: nextLiked ? false : prevReaction.disliked },
+    }));
+    updateReviewCounts(
+      reviewId,
+      prevLikeCount + (prevReaction.liked ? -1 : 1),
+      nextLiked && prevReaction.disliked ? Math.max(0, prevDislikeCount - 1) : prevDislikeCount
+    );
+
+    try {
+      const data = await toggleLikeReview(reviewId);
+      setReviewReactions((prev) => ({
+        ...prev,
+        [reviewId]: { liked: data.liked, disliked: data.liked ? false : prevReaction.disliked },
+      }));
+      updateReviewCounts(reviewId, data.like_count, data.dislike_count);
+      await refreshSession();
+    } catch (err) {
+      console.error(err);
+      setReviewReactions((prev) => ({ ...prev, [reviewId]: prevReaction }));
+      updateReviewCounts(reviewId, prevLikeCount, prevDislikeCount);
+    }
+  };
+
+  const handleDislikeReview = async (reviewId) => {
+    const review = reviews.find((r) => r._id === reviewId);
+    if (!review) return;
+    const prevReaction = reviewReactions[reviewId] || { liked: false, disliked: false };
+    const prevLikeCount = review.like_count ?? 0;
+    const prevDislikeCount = review.dislike_count ?? 0;
+    const nextDisliked = !prevReaction.disliked;
+
+    setReviewReactions((prev) => ({
+      ...prev,
+      [reviewId]: { disliked: nextDisliked, liked: nextDisliked ? false : prevReaction.liked },
+    }));
+    updateReviewCounts(
+      reviewId,
+      nextDisliked && prevReaction.liked ? Math.max(0, prevLikeCount - 1) : prevLikeCount,
+      prevDislikeCount + (prevReaction.disliked ? -1 : 1)
+    );
+
+    try {
+      const data = await toggleDislikeReview(reviewId);
+      setReviewReactions((prev) => ({
+        ...prev,
+        [reviewId]: { disliked: data.disliked, liked: data.disliked ? false : prevReaction.liked },
+      }));
+      updateReviewCounts(reviewId, data.like_count, data.dislike_count);
+      await refreshSession();
+    } catch (err) {
+      console.error(err);
+      setReviewReactions((prev) => ({ ...prev, [reviewId]: prevReaction }));
+      updateReviewCounts(reviewId, prevLikeCount, prevDislikeCount);
+    }
+  };
+
+  const refetchDestination = async () => {
+    try {
+      const data = await getDestination(id);
+      const dest = data.destination;
+      setDestination(dest);
+      setLikeCount(dest.like_count ?? 0);
+      setDislikeCount(dest.dislike_count ?? 0);
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleReviewSubmit = async ({ rating, comment }) => {
-    if (editingReview) {
-      await updateReview(editingReview._id, { rating, comment });
-    } else {
-      await createReview(id, { rating, comment });
-    }
+    await createReview(id, { rating, comment });
     await Promise.all([fetchReviews(), refetchDestination()]);
   };
 
-  const handleEditReview = (review) => {
-    setEditingReview(review);
-    setShowReviewModal(true);
-  };
+  // 👉 1. Bulletproof OpenStreetMap Fetcher
+  const fetchNearbyOSMPlaces = async (rawLat, rawLng) => {
+    let lat = Number(rawLat);
+    let lng = Number(rawLng);
 
-  const handleDeleteReview = async (review) => {
-    if (!window.confirm("Delete this review?")) return;
-    try {
-      await deleteReview(review._id);
-      await Promise.all([fetchReviews(), refetchDestination()]);
-    } catch (err) {
-      console.error(err);
+    if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
+      console.warn("⚠️ Invalid coordinates:", { rawLat, rawLng });
+      return;
     }
-  };
 
-  const refetchDestination = async () => {
-    const data = await getDestination(id);
-    setDestination(data.destination);
+    // Auto-detect and fix swapped Lat/Lng in the database
+    if (lat > 50 && lng < 40) {
+      console.warn("⚠️ Lat/Lng appear swapped. Auto-correcting...");
+      [lat, lng] = [lng, lat];
+    }
+
+    setNearbyLoading(true);
+    try {
+      const query = `
+        [out:json][timeout:15];
+        (
+          node["tourism"~"hotel|guest_house|hostel|resort|motel"](around:3000,${lat},${lng});
+          way["tourism"~"hotel|guest_house|hostel|resort|motel"](around:3000,${lat},${lng});
+          relation["tourism"~"hotel|guest_house|hostel|resort|motel"](around:3000,${lat},${lng});
+          node["amenity"~"restaurant|cafe|fast_food|bar|food_court"](around:3000,${lat},${lng});
+          way["amenity"~"restaurant|cafe|fast_food|bar|food_court"](around:3000,${lat},${lng});
+          relation["amenity"~"restaurant|cafe|fast_food|bar|food_court"](around:3000,${lat},${lng});
+        );
+        out center 30;
+      `;
+
+      // Failover Server logic
+      const servers = [
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.kumi.systems/api/interpreter",
+        "https://maps.mail.ru/osm/tools/overpass/api/interpreter"
+      ];
+
+      let data = null;
+      for (const server of servers) {
+        try {
+          const res = await fetch(`${server}?data=${encodeURIComponent(query)}`);
+          if (res.ok) {
+            data = await res.json();
+            break;
+          }
+        } catch (e) {
+          console.warn(`Server ${server} failed, trying backup mirror...`);
+        }
+      }
+
+      if (!data || !data.elements) {
+        console.error("❌ Failed to fetch from all OpenStreetMap servers.");
+        return;
+      }
+
+      const hotels = [];
+      const restaurants = [];
+
+      data.elements.forEach((item) => {
+        if (!item.tags || !item.tags.name) return;
+
+        const placeLat = item.lat || item.center?.lat;
+        const placeLng = item.lon || item.center?.lon;
+
+        if (!placeLat || !placeLng) return;
+
+        const dist = getDistance(lat, lng, placeLat, placeLng);
+        if (dist > 5.0) return; // Discard outliers beyond 5km
+
+        const place = {
+          id: item.id,
+          name: item.tags.name,
+          type: item.tags.tourism || item.tags.amenity,
+          cuisine: item.tags.cuisine,
+          phone: item.tags.phone || item.tags["contact:phone"],
+          website: item.tags.website || item.tags["contact:website"],
+          street: item.tags["addr:street"]
+            ? `${item.tags["addr:street"]} ${item.tags["addr:housenumber"] || ""}`
+            : null,
+          lat: placeLat,
+          lng: placeLng,
+          distance: dist,
+        };
+
+        if (item.tags.tourism) {
+          hotels.push(place);
+        } else if (item.tags.amenity) {
+          restaurants.push(place);
+        }
+      });
+
+      // Sort strictly by the numeric distance
+      hotels.sort((a, b) => a.distance - b.distance);
+      restaurants.sort((a, b) => a.distance - b.distance);
+
+      setNearbyHotels(hotels.slice(0, 6));
+      setNearbyRestaurants(restaurants.slice(0, 6));
+    } catch (err) {
+      console.error("OSM Fetch Error (Normal in Dev Mode):", err);
+    } finally {
+      setNearbyLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -250,10 +501,34 @@ export default function DestinationDetail() {
       setError(null);
       try {
         const data = await getDestination(id);
-        setDestination(data.destination);
-        setLikeCount(data.destination.like_count ?? 0);
+        const dest = data.destination;
+        setDestination(dest);
+        setLikeCount(dest.like_count ?? 0);
+        setDislikeCount(dest.dislike_count ?? 0);
         const user = getCurrentUser();
         setLiked(!!user?.destinations_liked?.includes(id));
+        setDisliked(!!user?.destinations_disliked?.includes(id));
+
+        const lat = dest.cordinates?.lat || dest.coordinates?.lat;
+        const lng = dest.cordinates?.lng || dest.coordinates?.lng;
+        if (lat && lng) {
+          fetchNearbyOSMPlaces(lat, lng);
+        }
+
+        if (dest.state) {
+          try {
+            const allRes = await destinationLoader(); 
+            const allDestinations = Array.isArray(allRes) ? allRes : (allRes.destinations || []);
+            
+            const filtered = allDestinations
+              .filter((d) => d.state === dest.state && d._id !== id)
+              .slice(0, 20);
+              
+            setRelatedDestinations(filtered);
+          } catch (relErr) {
+            console.error("Failed to fetch related destinations", relErr);
+          }
+        }
       } catch (err) {
         setError(err.response?.data?.message || err.message);
       } finally {
@@ -294,6 +569,10 @@ export default function DestinationDetail() {
           liked={liked}
           likeCount={likeCount}
           onToggleLike={handleToggleLike}
+          disliked={disliked}
+          dislikeCount={dislikeCount}
+          onToggleDislike={handleToggleDislike}
+          isOwner={currentUser?.id === destination.created_by?._id || currentUser?.id === destination.created_by}
         />
 
         {/* Main content grid */}
@@ -438,12 +717,7 @@ export default function DestinationDetail() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-white">Traveler Reviews</h2>
                 <button
-                  onClick={() =>
-                    requireAuth(() => {
-                      setEditingReview(null);
-                      setShowReviewModal(true);
-                    })
-                  }
+                  onClick={() => requireAuth(() => setShowReviewModal(true))}
                   className="flex items-center gap-1.5 text-sm font-semibold text-orange-400 hover:text-orange-300 transition-colors"
                 >
                   <Plus className="w-4 h-4" strokeWidth={2} />
@@ -458,8 +732,10 @@ export default function DestinationDetail() {
                       review={review}
                       index={i}
                       isOwn={currentUser?.id === review.userId?._id}
-                      onEdit={() => handleEditReview(review)}
-                      onDelete={() => handleDeleteReview(review)}
+                      liked={reviewReactions[review._id]?.liked}
+                      disliked={reviewReactions[review._id]?.disliked}
+                      onLike={() => requireAuth(() => handleLikeReview(review._id))}
+                      onDislike={() => requireAuth(() => handleDislikeReview(review._id))}
                     />
                   ))}
                 </div>
@@ -543,11 +819,7 @@ export default function DestinationDetail() {
 
       {showReviewModal && (
         <ReviewForm
-          review={editingReview}
-          onClose={() => {
-            setShowReviewModal(false);
-            setEditingReview(null);
-          }}
+          onClose={() => setShowReviewModal(false)}
           onSubmit={handleReviewSubmit}
         />
       )}

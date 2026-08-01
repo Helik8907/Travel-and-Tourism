@@ -162,6 +162,10 @@ const destinationSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    dislike_count: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
