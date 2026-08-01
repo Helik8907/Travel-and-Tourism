@@ -1,19 +1,25 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, Pencil, Calendar, Heart, Compass, MessageSquare, Plus } from "lucide-react";
+import { MapPin, Pencil, Calendar, Heart, ThumbsDown, Compass, MessageSquare, Newspaper, Plus } from "lucide-react";
 import { getProfile, updateProfile } from "../lib/profile/profile";
 import { refreshSession } from "../lib/auth/auth";
 import ProfileEditForm from "../components/profile/ProfileEditForm";
 
-function StatCard({ icon: Icon, label, value, to }) {
+const TONES = {
+  orange: "bg-orange-500/20 text-orange-400",
+  red: "bg-red-500/20 text-red-400",
+  slate: "bg-slate-500/20 text-slate-300",
+};
+
+function StatCard({ icon: Icon, label, value, to, tone = "orange" }) {
   return (
     <Link
       to={to}
       className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10 flex items-center gap-4 hover:bg-white/10 hover:border-white/20 transition-colors"
     >
-      <div className="w-11 h-11 rounded-xl bg-orange-500/20 flex items-center justify-center shrink-0">
-        <Icon className="w-5 h-5 text-orange-400" strokeWidth={1.75} />
+      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${TONES[tone]}`}>
+        <Icon className="w-5 h-5" strokeWidth={1.75} />
       </div>
       <div>
         <p className="text-2xl font-bold text-white leading-tight">{value}</p>
@@ -118,6 +124,15 @@ export default function ProfilePage() {
                 Add destination
               </Link>
             </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                to="/blog/new"
+                className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full border border-orange-400/60 text-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-500 font-semibold text-sm transition-all duration-300"
+              >
+                <Newspaper className="w-4 h-4" strokeWidth={1.75} />
+                Write blog
+              </Link>
+            </motion.div>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -137,9 +152,17 @@ export default function ProfilePage() {
           transition={{ delay: 0.1, duration: 0.4 }}
           className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6"
         >
-          <StatCard icon={Heart} label="Liked destinations" value={user.destinations_liked?.length ?? 0} to="/profile/liked" />
-          <StatCard icon={Compass} label="Destinations added" value={user.destinations_created?.length ?? 0} to="/profile/created" />
-          <StatCard icon={MessageSquare} label="Reviews written" value={user.reviews_created?.length ?? 0} to="/profile/reviews" />
+          <StatCard icon={Compass} label="Destinations created" value={user.destinations_created?.length ?? 0} to="/profile/created" />
+          <StatCard icon={MessageSquare} label="Reviews created" value={user.reviews_created?.length ?? 0} to="/profile/reviews" />
+          <StatCard icon={Newspaper} label="Blogs created" value={user.blogs_created?.length ?? 0} to="/profile/blogs" />
+
+          <StatCard icon={Heart} label="Destinations liked" value={user.destinations_liked?.length ?? 0} to="/profile/liked" tone="red" />
+          <StatCard icon={Heart} label="Reviews liked" value={user.reviews_liked?.length ?? 0} to="/profile/reviews-liked" tone="red" />
+          <StatCard icon={Heart} label="Blogs liked" value={user.blogs_liked?.length ?? 0} to="/profile/blogs-liked" tone="red" />
+
+          <StatCard icon={ThumbsDown} label="Destinations disliked" value={user.destinations_disliked?.length ?? 0} to="/profile/disliked" tone="slate" />
+          <StatCard icon={ThumbsDown} label="Reviews disliked" value={user.reviews_disliked?.length ?? 0} to="/profile/reviews-disliked" tone="slate" />
+          <StatCard icon={ThumbsDown} label="Blogs disliked" value={user.blogs_disliked?.length ?? 0} to="/profile/blogs-disliked" tone="slate" />
         </motion.div>
       </div>
 

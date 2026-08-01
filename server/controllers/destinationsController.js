@@ -1,5 +1,8 @@
 const asyncHandler = require('../middleware/asyncHandler');
 const Destination = require('../models/destination_model');
+const createReactionHandlers = require('../utils/reactionHandlers');
+
+const { toggleLike, toggleDislike } = createReactionHandlers(Destination, 'Destination', 'destinations');
 
 const validateDestinationPayload = (body) => {
   const { cost_range, time_take, weather } = body;
@@ -169,28 +172,6 @@ const deleteDestination = asyncHandler(async (req, res) => {
   res.status(200).json({ message: 'Destination deleted' });
 });
 
-const toggleLike = asyncHandler(async (req, res) => {
-  const destination = await Destination.findById(req.params.id);
-  if (!destination) {
-    return res.status(404).json({ message: 'Destination not found' });
-  }
-
-  const alreadyLiked = req.user.destinations_liked.some((id) => id.equals(destination._id));
-
-  if (alreadyLiked) {
-    req.user.destinations_liked.pull(destination._id);
-    destination.like_count = Math.max(0, destination.like_count - 1);
-  } else {
-    req.user.destinations_liked.push(destination._id);
-    destination.like_count += 1;
-  }
-
-  await req.user.save();
-  await destination.save();
-
-  res.status(200).json({ liked: !alreadyLiked, like_count: destination.like_count });
-});
-
 module.exports = {
   destinationLoader,
   getDestination,
@@ -198,4 +179,5 @@ module.exports = {
   editDestination,
   deleteDestination,
   toggleLike,
+  toggleDislike,
 };

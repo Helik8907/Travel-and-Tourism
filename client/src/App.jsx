@@ -14,10 +14,13 @@ import ProfilePage from './pages/ProfilePage'
 import ProfileListPage from './pages/ProfileListPage'
 import AddDestinationPage from './pages/AddDestinationPage'
 import EditDestinationPage from './pages/EditDestinationPage'
+import AddBlogPage from './pages/AddBlogPage'
+import EditBlogPage from './pages/EditBlogPage'
 import ScrollToTop from './components/ScrollToTop'
 import AddItinerary from './pages/AddItinerary'
 import MyItinerariesPage from './pages/MyItinerariesPage'
 import Blog from './pages/Blog'
+import BlogDetail from './pages/BlogDetail'
 import About from './pages/About'
 
 function App() {
@@ -34,6 +37,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/destinations" element={<Destinations />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:id" element={<BlogDetail />} />
               <Route path='/destinationDetail/:id' element={<DestinationDetail/>}/>
                <Route path="/planner" element={<AddItinerary/>}/>
                <Route path="/about" element={<About/>}/>
@@ -47,6 +51,8 @@ function App() {
               <Route path="/profile/:section" element={<ProfileListPage />} />
               <Route path="/destinations/new" element={<AddDestinationPage />} />
               <Route path="/destinations/:id/edit" element={<EditDestinationPage />} />
+              <Route path="/blog/new" element={<AddBlogPage />} />
+              <Route path="/blog/:id/edit" element={<EditBlogPage />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
