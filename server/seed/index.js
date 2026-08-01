@@ -3,6 +3,7 @@ const { mongoUrl } = require('../config/config.js');
 const { successColor, errorColor } = require('../utils/colors.js');
 const seedAdmin = require('./adminSeeder.js');
 const seedDestinations = require('./sample.js');
+const seedBlogs = require('./blogSeeder.js');
 
 const run = async () => {
   try {
@@ -11,6 +12,7 @@ const run = async () => {
 
     await seedAdmin();
     await seedDestinations();
+    await seedBlogs();
   } catch (error) {
     console.log(errorColor, '❌ Seeding error:', error);
   } finally {

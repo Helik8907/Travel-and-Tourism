@@ -21,6 +21,14 @@ const reviewSchema = new mongoose.Schema({
     min: 0,
   max: 5,
   },
+  like_count: {
+    type: Number,
+    default: 0,
+  },
+  dislike_count: {
+    type: Number,
+    default: 0,
+  },
   comment: String,
 }, { timestamps: true });
 

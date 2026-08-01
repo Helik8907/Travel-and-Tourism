@@ -32,3 +32,8 @@ export const toggleLikeDestination = async (id) => {
     const { data } = await api.post(`/destinations/${id}/like`);
     return data;
 };
+
+export const toggleDislikeDestination = async (id) => {
+    const { data } = await api.post(`/destinations/${id}/dislike`);
+    return data;
+};

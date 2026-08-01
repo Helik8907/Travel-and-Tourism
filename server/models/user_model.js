@@ -68,6 +68,11 @@ const userSchema = new mongoose.Schema(
       ref: 'Destination',
     }],
 
+    destinations_disliked: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Destination',
+    }],
+
     blogs_created: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Blog',
@@ -84,6 +89,16 @@ const userSchema = new mongoose.Schema(
     }],
 
     reviews_created: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Review',
+    }],
+
+    reviews_liked: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Review',
+    }],
+
+    reviews_disliked: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Review',
     }],

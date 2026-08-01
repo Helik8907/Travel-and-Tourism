@@ -5,10 +5,17 @@ const blogSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    description: {
+        type: String,
+        required: true
+    },
     content: {
         type: String,
         required: true
     },
+    images: [{
+        type: String
+    }],
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
