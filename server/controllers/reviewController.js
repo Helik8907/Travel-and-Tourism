@@ -1,7 +1,11 @@
 const asyncHandler = require('../middleware/asyncHandler');
 const Review = require('../models/review_model');
 const Destination = require('../models/destination_model');
+const Blog = require('../models/blog_model');
 const User = require('../models/user_model');
+const createReactionHandlers = require('../utils/reactionHandlers');
+
+const { toggleLike, toggleDislike } = createReactionHandlers(Review, 'Review', 'reviews');
 
 const recalculateDestinationRating = async (destinationId) => {
   const reviews = await Review.find({ destinationId });
@@ -52,7 +56,9 @@ const editReview = asyncHandler(async (req, res) => {
 
   Object.assign(review, { rating: req.body.rating, comment: req.body.comment });
   await review.save();
-  await recalculateDestinationRating(review.destinationId);
+  if (review.destinationId) {
+    await recalculateDestinationRating(review.destinationId);
+  }
 
   res.status(200).json({ review });
 });
@@ -68,16 +74,51 @@ const deleteReview = asyncHandler(async (req, res) => {
   }
 
   await review.deleteOne();
-  await Destination.findByIdAndUpdate(review.destinationId, { $pull: { reviews: review._id } });
   await User.findByIdAndUpdate(review.userId, { $pull: { reviews_created: review._id } });
-  await recalculateDestinationRating(review.destinationId);
+  if (review.destinationId) {
+    await Destination.findByIdAndUpdate(review.destinationId, { $pull: { reviews: review._id } });
+    await recalculateDestinationRating(review.destinationId);
+  }
+  if (review.blogId) {
+    await Blog.findByIdAndUpdate(review.blogId, { $pull: { reviews: review._id } });
+  }
 
   res.status(200).json({ message: 'Review deleted' });
+});
+
+const getBlogReviews = asyncHandler(async (req, res) => {
+  const reviews = await Review.find({ blogId: req.params.blogId }).populate('userId', 'name');
+  res.status(200).json({ reviews });
+});
+
+const createBlogReview = asyncHandler(async (req, res) => {
+  const blog = await Blog.findById(req.params.blogId);
+  if (!blog) {
+    return res.status(404).json({ message: 'Blog not found' });
+  }
+
+  const review = await Review.create({
+    ...req.body,
+    userId: req.user._id,
+    blogId: blog._id,
+  });
+
+  blog.reviews.push(review._id);
+  await blog.save();
+
+  req.user.reviews_created.push(review._id);
+  await req.user.save();
+
+  res.status(201).json({ review });
 });
 
 module.exports = {
   getDestinationReviews,
   createReview,
+  getBlogReviews,
+  createBlogReview,
   editReview,
   deleteReview,
+  toggleLike,
+  toggleDislike,
 };

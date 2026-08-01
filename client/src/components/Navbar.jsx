@@ -10,10 +10,9 @@ const byPrefixAndName = { fas: { user: faUser } };
 
 const NAV_LINKS = [
   { label: "Destinations", href: "/destinations" },
-  { label: "Experiences", href: "/experiences" },
+  { label: "Blogs", href: "/blog" },
   { label: "My Itinerary", href: "/itineraries" },
   { label: "About", href: "/about" },
-  { label: "Blog", href: "/blog" },
 ];
 
 export default function Navbar() {
@@ -24,10 +23,10 @@ export default function Navbar() {
   const [hovered, setHovered] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
-  
+
   // 1. ADDED: State to track what the user is typing in the search bar
   const [navSearch, setNavSearch] = useState("");
-  
+
   const [user, setUser] = useState(() => getCurrentUser());
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
@@ -59,7 +58,7 @@ export default function Navbar() {
     if (navSearch.trim()) {
       // Navigate to the destinations page with the query
       navigate(`/destinations?city=${encodeURIComponent(navSearch.trim())}`);
-      
+
       // Clean up: close menus and reset the search text
       setSearchOpen(false);
       setMobileOpen(false);
@@ -83,11 +82,10 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
-          scrolled
-            ? "bg-teal-950/90 backdrop-blur-md shadow-md shadow-black/10"
-            : "bg-gradient-to-b from-black/50 to-transparent"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${scrolled
+          ? "bg-teal-950/90 backdrop-blur-md shadow-md shadow-black/10"
+          : "bg-gradient-to-b from-black/50 to-transparent"
+          }`}
       >
         <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 lg:h-20 items-center justify-between">
@@ -154,11 +152,10 @@ export default function Navbar() {
                       {/* 3. MODIFIED: Changed this div to a form and added onSubmit */}
                       <form
                         onSubmit={handleNavSearchSubmit}
-                        className={`flex items-center rounded-full border transition-colors duration-300 ${
-                          searchFocused
-                            ? "border-orange-400/70 bg-white/10"
-                            : "border-white/20 bg-white/5"
-                        }`}
+                        className={`flex items-center rounded-full border transition-colors duration-300 ${searchFocused
+                          ? "border-orange-400/70 bg-white/10"
+                          : "border-white/20 bg-white/5"
+                          }`}
                       >
                         <input
                           ref={searchInputRef}
@@ -320,7 +317,7 @@ export default function Navbar() {
                 transition={{ duration: 0.3, ease: "easeOut" }}
               >
                 {/* 4. MODIFIED: Changed this div to a form for the mobile menu search */}
-                <form 
+                <form
                   onSubmit={handleNavSearchSubmit}
                   className="flex items-center rounded-full border border-white/20 bg-white/5 px-4 py-2.5 mb-4"
                 >

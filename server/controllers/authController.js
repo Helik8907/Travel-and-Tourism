@@ -3,6 +3,7 @@ const asyncHandler = require('../middleware/asyncHandler');
 const User = require('../models/user_model');
 const Destination = require('../models/destination_model');
 const Review = require('../models/review_model');
+const Blog = require('../models/blog_model');
 const { jwtSecret, env } = require('../config/config');
 
 const cookieOptions = {
@@ -18,6 +19,9 @@ const toSafeUser = (user) => ({
   email: user.email,
   role: user.role,
   destinations_liked: user.destinations_liked,
+  destinations_disliked: user.destinations_disliked,
+  reviews_liked: user.reviews_liked,
+  reviews_disliked: user.reviews_disliked,
 });
 
 const sendAuthResponse = (res, status, user) => {
@@ -86,21 +90,46 @@ const updateMe = asyncHandler(async (req, res) => {
   res.status(200).json({ user: toSafeUser(req.user) });
 });
 
-const profile = asyncHandler(async (req, res) => {
-  const user = await req.user.populate({
-    path: 'destinations_liked',
-    select: 'name city country images avg_rating',
-  });
+const DESTINATION_FIELDS = 'name city country images avg_rating';
+const BLOG_FIELDS = 'title description createdAt';
+const REVIEW_FIELDS = 'rating comment createdAt destinationId userId';
 
-  // created_by/userId are the source of truth for authorship; destinations_created
-  // and reviews_created can miss entries created before those fields were wired up.
-  const [destinationsCreated, reviewsCreated] = await Promise.all([
+const profile = asyncHandler(async (req, res) => {
+  const user = await req.user.populate([
+    { path: 'destinations_liked', select: DESTINATION_FIELDS },
+    { path: 'destinations_disliked', select: DESTINATION_FIELDS },
+    { path: 'blogs_liked', select: BLOG_FIELDS },
+    { path: 'blogs_disliked', select: BLOG_FIELDS },
+    {
+      path: 'reviews_liked',
+      select: REVIEW_FIELDS,
+      populate: [
+        { path: 'destinationId', select: 'name city country images' },
+        { path: 'userId', select: 'name' },
+      ],
+    },
+    {
+      path: 'reviews_disliked',
+      select: REVIEW_FIELDS,
+      populate: [
+        { path: 'destinationId', select: 'name city country images' },
+        { path: 'userId', select: 'name' },
+      ],
+    },
+  ]);
+
+  // created_by/userId/author are the source of truth for authorship; destinations_created,
+  // reviews_created and blogs_created can miss entries created before those fields were wired up.
+  const [destinationsCreated, reviewsCreated, blogsCreated] = await Promise.all([
     Destination.find({ created_by: user._id })
-      .select('name city country images avg_rating')
+      .select(DESTINATION_FIELDS)
       .sort({ createdAt: -1 }),
     Review.find({ userId: user._id })
-      .select('rating comment createdAt destinationId')
+      .select(REVIEW_FIELDS)
       .populate('destinationId', 'name city country images')
+      .sort({ createdAt: -1 }),
+    Blog.find({ author: user._id })
+      .select(BLOG_FIELDS)
       .sort({ createdAt: -1 }),
   ]);
 
@@ -110,7 +139,14 @@ const profile = asyncHandler(async (req, res) => {
       resident: user.resident,
       createdAt: user.createdAt,
       destinations_created: destinationsCreated,
+      destinations_liked: user.destinations_liked,
+      destinations_disliked: user.destinations_disliked,
       reviews_created: reviewsCreated,
+      reviews_liked: user.reviews_liked,
+      reviews_disliked: user.reviews_disliked,
+      blogs_created: blogsCreated,
+      blogs_liked: user.blogs_liked,
+      blogs_disliked: user.blogs_disliked,
     },
   });
 });
