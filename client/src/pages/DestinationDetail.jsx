@@ -21,6 +21,8 @@ import {
   Phone,
   Globe,
   Map as MapIcon,
+  Cloud,
+  Wind,
 } from "lucide-react";
 
 // 👉 Leaflet Map Imports
@@ -33,6 +35,7 @@ import {
   getDestination,
   toggleLikeDestination,
   toggleDislikeDestination,
+  getDestinationLiveWeather,
 } from "../lib/destinations/destinations";
 import {
   getDestinationReviews,
@@ -294,6 +297,9 @@ export default function DestinationDetail() {
   const [reviews, setReviews] = useState([]);
   const [reviewReactions, setReviewReactions] = useState({});
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [liveWeather, setLiveWeather] = useState(null);
+  const [liveWeatherLoading, setLiveWeatherLoading] = useState(false);
+  const [liveWeatherError, setLiveWeatherError] = useState(null);
 
   const requireAuth = (action) => {
     if (!getCurrentUser()) {
@@ -470,6 +476,19 @@ export default function DestinationDetail() {
     await Promise.all([fetchReviews(), refetchDestination()]);
   };
 
+  const fetchLiveWeather = async (destinationId) => {
+    setLiveWeatherLoading(true);
+    setLiveWeatherError(null);
+    try {
+      const data = await getDestinationLiveWeather(destinationId);
+      setLiveWeather(data.weather);
+    } catch (err) {
+      setLiveWeatherError(err.response?.data?.message || err.message);
+    } finally {
+      setLiveWeatherLoading(false);
+    }
+  };
+
   // 👉 1. Bulletproof OpenStreetMap Fetcher
   const fetchNearbyOSMPlaces = async (rawLat, rawLng) => {
     let lat = Number(rawLat);
@@ -597,6 +616,7 @@ export default function DestinationDetail() {
         const lng = dest.cordinates?.lng || dest.coordinates?.lng;
         if (lat && lng) {
           fetchNearbyOSMPlaces(lat, lng);
+          fetchLiveWeather(id);
         }
 
         if (dest.state) {
@@ -725,7 +745,7 @@ export default function DestinationDetail() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
             >
               <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
                 <div className="flex items-center gap-3 mb-3">
@@ -738,6 +758,33 @@ export default function DestinationDetail() {
                   {destination.weather?.min_temp}° - {destination.weather?.max_temp}°C
                 </p>
                 <p className="text-xs text-white/50">{destination.weather?.condition}</p>
+              </div>
+
+              <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center">
+                    <Cloud className="w-5 h-5 text-orange-400" strokeWidth={1.75} />
+                  </div>
+                  <h3 className="text-sm font-bold text-white">Current Weather</h3>
+                </div>
+                {liveWeatherLoading ? (
+                  <p className="text-sm text-white/40">Fetching live weather...</p>
+                ) : liveWeatherError ? (
+                  <p className="text-xs text-white/40">{liveWeatherError}</p>
+                ) : liveWeather ? (
+                  <>
+                    <p className="text-2xl font-bold text-white mb-1">
+                      {Math.round(liveWeather.temperature)}°C
+                    </p>
+                    <p className="text-xs text-white/50">{liveWeather.condition}</p>
+                    <p className="flex items-center gap-1 text-xs text-white/40 mt-1.5">
+                      <Wind className="w-3.5 h-3.5" strokeWidth={1.75} />
+                      {liveWeather.windspeed} km/h
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-white/40">Not available</p>
+                )}
               </div>
 
               <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10">

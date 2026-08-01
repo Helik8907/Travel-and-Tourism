@@ -37,3 +37,8 @@ export const toggleDislikeDestination = async (id) => {
     const { data } = await api.post(`/destinations/${id}/dislike`);
     return data;
 };
+
+export const getDestinationLiveWeather = async (id) => {
+    const { data } = await api.get(`/destinations/${id}/weather`);
+    return data;
+};

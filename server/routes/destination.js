@@ -7,6 +7,7 @@ const {
   deleteDestination,
   toggleLike,
   toggleDislike,
+  getDestinationWeather,
 } = require('../controllers/destinationsController');
 const { protect, restrictTo } = require('../middleware/auth');
 
@@ -14,6 +15,7 @@ const router = express.Router();
 
 router.get('/', destinationLoader);
 router.get('/:id', getDestination);
+router.get('/:id/weather', getDestinationWeather);
 router.post('/', protect, createDestination);
 router.put('/:id', protect, editDestination);
 router.delete('/:id', protect, deleteDestination);
