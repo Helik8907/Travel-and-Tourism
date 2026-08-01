@@ -70,6 +70,7 @@ export default function ItineraryForm() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(!!id);
   const [error, setError] = useState(null);
+  const [stopError, setStopError] = useState(null);
 
   // Form state for new stop
   const [newStopDest, setNewStopDest] = useState("");
@@ -227,7 +228,16 @@ export default function ItineraryForm() {
 
   // Add a stop to the active day
   const addStop = () => {
-    if (!newStopDest) return;
+    setStopError(null);
+    if (!newStopDest) {
+      setStopError("Select a destination before adding a stop.");
+      return;
+    }
+
+    if (!newStopTime) {
+      setStopError("Enter a time for the stop.");
+      return;
+    }
 
     const costRange = getDestCostRange(newStopDest);
     const cost = costRange ? (costRange.min + costRange.max) / 2 : 0;
@@ -292,8 +302,36 @@ export default function ItineraryForm() {
       return;
     }
 
-    setSaving(true);
     setError(null);
+    setStopError(null);
+
+    if (!tripTitle.trim()) {
+      setError("Trip title cannot be empty.");
+      return;
+    }
+
+    if (!startDate || Number.isNaN(Date.parse(startDate))) {
+      setError("Pick a valid start date.");
+      return;
+    }
+
+    if (days.every((day) => day.entries.length === 0)) {
+      setError("Add at least one stop before saving your itinerary.");
+      return;
+    }
+
+    const invalidStop = days.some((day) =>
+      day.entries.some(
+        (entry) =>
+          !entry.destinationId || !entry.time || entry.cost == null || Number(entry.cost) < 0
+      )
+    );
+    if (invalidStop) {
+      setError("Each stop must include a destination, time, and cost.");
+      return;
+    }
+
+    setSaving(true);
 
     // Build payload matching the Mongoose model exactly
     const payload = {
@@ -687,7 +725,8 @@ export default function ItineraryForm() {
                         <motion.button
                           whileTap={{ scale: 0.97 }}
                           onClick={addStop}
-                          className="px-5 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium transition-colors"
+                          disabled={!newStopDest || !newStopTime}
+                          className="px-5 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium transition-colors disabled:opacity-60"
                         >
                           Add to Day {activeDay}
                         </motion.button>
@@ -698,6 +737,9 @@ export default function ItineraryForm() {
                           Cancel
                         </button>
                       </div>
+                      {stopError && (
+                        <p className="mt-3 text-red-500 text-xs">{stopError}</p>
+                      )}
                     </div>
                   </motion.div>
                 )}

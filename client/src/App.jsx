@@ -40,6 +40,7 @@ function App() {
               <Route path="/blog/:id" element={<BlogDetail />} />
               <Route path='/destinationDetail/:id' element={<DestinationDetail/>}/>
                <Route path="/planner" element={<AddItinerary/>}/>
+               <Route path="/about" element={<About/>}/>
             </Route>
             <Route element={<ProtectedRoute />}>
                <Route path="/itineraries" element={<MyItinerariesPage/>}/>
