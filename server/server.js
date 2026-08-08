@@ -20,8 +20,11 @@ const app = express();
 const devOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
 const allowedOrigins = env === 'production' ? clientUrls : [...clientUrls, ...devOrigins];
 
+console.log('CORS allowedOrigins:', allowedOrigins);
+
 app.use(cors({
   origin: (origin, callback) => {
+    console.log('CORS request origin:', origin);
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
