@@ -3,6 +3,8 @@
 A full-stack travel and tourism web app: browse destinations, read/write reviews and blogs,
 plan itineraries, and check live weather for destinations.
 
+**Live app:** [wanderly-fawn-nu.vercel.app](https://wanderly-fawn-nu.vercel.app)
+
 ## Tech Stack
 
 **Frontend** (`client/`): React 18, Vite, React Router v6, Tailwind CSS v4, Axios,
@@ -59,3 +61,4 @@ npm run dev    # vite, http://localhost:5173
 
 - Frontend: Vercel (`client/vercel.json` rewrites all paths to `index.html` for SPA routing)
 - Backend: hosted separately, configured per-environment via `.env.development` / `.env.production`
+  
