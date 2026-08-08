@@ -1,7 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const { port,mongoUrl } = require('./config/config');
+const { port, mongoUrl, clientUrls, env } = require('./config/config');
 const mongoose = require('mongoose');
 const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
@@ -17,7 +17,19 @@ const blogRoutes = require('./routes/blog');
 const searchRoute=require("./routes/serch");
 const app = express();
 
-app.use(cors({ origin: true, credentials: true }));
+const devOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
+const allowedOrigins = env === 'production' ? clientUrls : [...clientUrls, ...devOrigins];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.use(requestLogger);

@@ -13,9 +13,10 @@ dotenv.config({ path: envSpecificPath });
 
 const envSchema = Joi.object({
   NODE_ENV: Joi.string().valid('development', 'production', 'test').required(),
-  PORT: Joi.number().integer().min(1).default(3000),
+  PORT: Joi.number().integer().min(1).empty('').default(3000),
   MONGO_URL: Joi.string().required().description('MongoDB connection URL'),
   JWT_SECRET: Joi.string().required().description('JWT secret key'),
+  CLIENT_URL: Joi.string().allow('').description('Comma-separated list of allowed client origins'),
 });
 
 const { error, value: envVars } = envSchema.validate(process.env, { allowUnknown: true });
@@ -28,4 +29,8 @@ module.exports = {
   port: envVars.PORT,
   mongoUrl: envVars.MONGO_URL,
   jwtSecret: envVars.JWT_SECRET,
+  clientUrls: (envVars.CLIENT_URL || '')
+    .split(',')
+    .map((url) => url.trim())
+    .filter(Boolean),
 };
